@@ -1,0 +1,78 @@
+package com.fongtaoframework.starter.web.exception;
+
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
+import com.fongtaoframework.core.BusinessException;
+import com.fongtaoframework.core.ErrorCode;
+import com.fongtaoframework.core.R;
+import com.fongtaoframework.core.TraceIdContext;
+import com.fongtaoframework.starter.logging.support.SensitiveDataSanitizer;
+import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
+import org.springframework.web.ErrorResponseException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+@Slf4j
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<R<Void>> handleBusinessException(BusinessException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(R.failed(ex.code(), ex.getMessage()));
+    }
+
+    @ExceptionHandler({
+            MethodArgumentNotValidException.class,
+            BindException.class,
+            ConstraintViolationException.class,
+            HandlerMethodValidationException.class
+    })
+    public ResponseEntity<R<Void>> handleValidationException(Exception ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(R.failed(ErrorCode.PARAM_ERROR.code(), firstMessage(ex)));
+    }
+
+    @ExceptionHandler(ErrorResponseException.class)
+    public ResponseEntity<R<Void>> handleErrorResponseException(ErrorResponseException ex) {
+        int status = ex.getStatusCode().value();
+        String message = ex.getBody().getDetail();
+        if (StrUtil.isBlank(message)) {
+            message = ex.getMessage();
+        }
+        if (StrUtil.isBlank(message)) {
+            message = ErrorCode.INTERNAL_ERROR.message();
+        }
+        return ResponseEntity.status(ex.getStatusCode()).body(R.failed(status, message));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<R<Void>> handleException(Exception ex) {
+        log.error(
+                "unexpected_exception traceId={} exception={} message={}",
+                TraceIdContext.currentOrCreate(),
+                ex.getClass().getName(),
+                SensitiveDataSanitizer.maskLine(ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(R.failed(ErrorCode.INTERNAL_ERROR));
+    }
+
+    private String firstMessage(Exception ex) {
+        if (ex instanceof MethodArgumentNotValidException methodArgumentNotValidException
+                && methodArgumentNotValidException.hasErrors()) {
+            return methodArgumentNotValidException.getAllErrors().getFirst().getDefaultMessage();
+        }
+        if (ex instanceof BindException bindException && bindException.hasErrors()) {
+            return bindException.getAllErrors().getFirst().getDefaultMessage();
+        }
+        if (ex instanceof HandlerMethodValidationException handlerMethodValidationException
+                && CollUtil.isNotEmpty(handlerMethodValidationException.getAllErrors())) {
+            return handlerMethodValidationException.getAllErrors().getFirst().getDefaultMessage();
+        }
+        return ex.getMessage();
+    }
+}

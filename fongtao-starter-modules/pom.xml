@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.fongtaoframework</groupId>
+    <artifactId>fongtao-starter-modules</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>fongtao-starter-modules</name>
+    <description>基础 starter 聚合工程。</description>
+
+    <modules>
+        <module>fongtao-starter-dependencies</module>
+        <module>fongtao-starter-parent</module>
+        <module>fongtao-starter-core</module>
+        <module>fongtao-starter-web</module>
+        <module>fongtao-starter-mybatis</module>
+        <module>fongtao-starter-security</module>
+        <module>fongtao-starter-cache</module>
+        <module>fongtao-starter-logging</module>
+        <module>fongtao-starter-lock</module>
+        <module>fongtao-starter-file</module>
+        <module>fongtao-starter-forest</module>
+        <module>fongtao-starter-observability</module>
+    </modules>
+
+</project>

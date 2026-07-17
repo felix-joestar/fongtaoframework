@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.fongtaoframework</groupId>
+        <artifactId>fongtao-starter-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../../fongtao-starter-modules/fongtao-starter-parent/pom.xml</relativePath>
+    </parent>
+    <artifactId>fongtao-admin-parent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>fongtao-admin-parent</name>
+    <description>admin 聚合工程，仅包含 admin starter 和调试 website。</description>
+
+    <modules>
+        <module>fongtao-admin-starter</module>
+        <module>fongtao-admin-website</module>
+    </modules>
+
+</project>

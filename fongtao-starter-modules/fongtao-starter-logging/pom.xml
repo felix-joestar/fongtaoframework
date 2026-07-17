@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.fongtaoframework</groupId>
+        <artifactId>fongtao-starter-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../fongtao-starter-parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>fongtao-starter-logging</artifactId>
+    <name>fongtao-starter-logging</name>
+    <description>提供 trace/request id、敏感信息脱敏和可选请求摘要日志。</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fongtaoframework</groupId>
+            <artifactId>fongtao-starter-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

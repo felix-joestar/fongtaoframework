@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: fongtao-admin-website
+  datasource:
+    url: jdbc:h2:mem:fongtao_admin_website;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+    druid:
+      validation-query: select 1
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:META-INF/fongtao-admin/schema-h2.sql
+      data-locations: classpath:META-INF/fongtao-admin/data-h2.sql
+
+server:
+  port: 8080
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+
+fongtao:
+  security:
+    jwt:
+      secret: 0123456789abcdef0123456789abcdef

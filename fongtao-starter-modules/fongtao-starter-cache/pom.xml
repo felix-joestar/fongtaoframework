@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.fongtaoframework</groupId>
+        <artifactId>fongtao-starter-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../fongtao-starter-parent/pom.xml</relativePath>
+    </parent>
+
+    <artifactId>fongtao-starter-cache</artifactId>
+    <name>fongtao-starter-cache</name>
+    <description>提供 Caffeine、Spring Cache、RedisTemplate、Redis 序列化和 Redisson 基础能力。</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fongtaoframework</groupId>
+            <artifactId>fongtao-starter-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

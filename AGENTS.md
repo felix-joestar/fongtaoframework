@@ -49,7 +49,10 @@
 
 ## 后端编码规则
 
-- 业务代码按模块优先组织为 `controller`、`facade`、`service`、`domain`、`mapper`；`domain` 下按 `entity`、`dto` 等职责继续分包，避免按全局技术层跨业务聚集。
+- 业务 starter 的 Java 根包统一使用 `com.fongtaoframework.starter.<business>`；以 admin 为例，公共能力放在 `com.fongtaoframework.starter.admin.common`，业务模块放在 `com.fongtaoframework.starter.admin.modules.<module>`。
+- `common` 只放当前业务 starter 内共享的配置、属性、常量、枚举、自动配置和横向基础能力，不放具体业务用例、Controller、Facade、Service、Mapper 或 Entity。
+- `modules` 下按业务能力优先拆包，例如 `modules.auth`、后续 `modules.rights`；每个业务模块内部再组织为 `controller`、`facade`、`service`、`domain`、`mapper`、`converter`，避免按全局技术层跨业务聚集。
+- `domain` 下按 `entity`、`dto` 等职责继续分包；Entity 只表示数据库映射，DTO/Request/Response 只用于传输和接口契约。
 - Controller 只处理请求接入、参数绑定和响应包装，只依赖 Facade；Facade 编排业务用例、认证上下文和多个 Service，不返回 `R<T>`；Service 负责业务规则和事务边界；Mapper 只负责数据库访问。
 - Facade 抽象接口使用 `I*Facade` 命名，实现类放在同级 `facade.impl` 子包且不加 `Impl` 后缀；Facade 不直接访问 Mapper。
 - 事务注解只放在 Service 实现类或明确的业务 Service 方法，不放在 Controller 或 Facade。

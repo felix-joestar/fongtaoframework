@@ -1,7 +1,7 @@
-package com.fongtaoframework.admin.application.converter;
+package com.fongtaoframework.admin.auth.converter;
 
-import com.fongtaoframework.admin.web.dto.LoginUserResponse;
-import com.fongtaoframework.admin.domain.entity.SysUser;
+import com.fongtaoframework.admin.auth.domain.dto.LoginUserResponse;
+import com.fongtaoframework.admin.auth.domain.entity.SysUser;
 import com.fongtaoframework.starter.security.userdetails.LoginUserDetails;
 import java.util.List;
 import org.mapstruct.Mapper;

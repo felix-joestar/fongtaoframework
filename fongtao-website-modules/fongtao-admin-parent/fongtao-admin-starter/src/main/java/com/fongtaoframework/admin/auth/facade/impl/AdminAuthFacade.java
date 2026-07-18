@@ -1,13 +1,13 @@
-package com.fongtaoframework.admin.application;
+package com.fongtaoframework.admin.auth.facade.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.fongtaoframework.admin.application.converter.SysUserConverter;
-import com.fongtaoframework.admin.web.dto.LoginRequest;
-import com.fongtaoframework.admin.web.dto.LoginResponse;
-import com.fongtaoframework.admin.web.dto.LoginUserResponse;
-import com.fongtaoframework.admin.web.dto.RefreshTokenRequest;
-import com.fongtaoframework.admin.domain.entity.SysUser;
-import com.fongtaoframework.admin.infrastructure.mapper.SysUserMapper;
+import com.fongtaoframework.admin.auth.converter.SysUserConverter;
+import com.fongtaoframework.admin.auth.domain.dto.LoginRequest;
+import com.fongtaoframework.admin.auth.domain.dto.LoginResponse;
+import com.fongtaoframework.admin.auth.domain.dto.LoginUserResponse;
+import com.fongtaoframework.admin.auth.domain.dto.RefreshTokenRequest;
+import com.fongtaoframework.admin.auth.domain.entity.SysUser;
+import com.fongtaoframework.admin.auth.facade.IAdminAuthFacade;
+import com.fongtaoframework.admin.auth.service.ISysUserService;
 import com.fongtaoframework.starter.security.jwt.JwtTokenService;
 import com.fongtaoframework.starter.security.jwt.RefreshTokenPrincipal;
 import com.fongtaoframework.starter.security.jwt.TokenValue;
@@ -16,50 +16,48 @@ import com.fongtaoframework.starter.security.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RequiredArgsConstructor
-public class AdminAuthService {
+public class AdminAuthFacade implements IAdminAuthFacade {
 
-    private static final int ENABLED_STATUS = 1;
-    private static final int NOT_DELETED = 0;
-
-    private final SysUserMapper sysUserMapper;
+    private final ISysUserService sysUserService;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenService jwtTokenService;
     private final SysUserConverter sysUserConverter;
 
+    @Override
     public LoginResponse login(LoginRequest request) {
-        SysUser user = findByUsername(request.username());
+        SysUser user = sysUserService.findByUserCode(request.username()).orElse(null);
         if (user == null || !passwordEncoder.matches(request.password(), user.getSysUserPwd())) {
             throw new BadCredentialsException("账号或密码错误");
         }
-        assertEnabled(user);
+        sysUserService.assertEnabled(user);
         return createLoginResponse(user);
     }
 
+    @Override
     public LoginResponse refreshToken(RefreshTokenRequest request) {
         RefreshTokenPrincipal principal = jwtTokenService.parseRefreshToken(request.refreshToken());
-        SysUser user = findById(principal.userId());
+        SysUser user = sysUserService.findByUserId(principal.userId()).orElse(null);
         if (user == null) {
             throw new BadCredentialsException("refresh token 无效");
         }
-        assertEnabled(user);
+        sysUserService.assertEnabled(user);
         return createLoginResponse(user);
     }
 
-    public LoginUserResponse currentUser() {
+    @Override
+    public LoginUserResponse loginUser() {
         LoginUserDetails loginUser = SecurityUtil.getCurrentUser()
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("未登录或登录已过期"));
-        SysUser user = findById(loginUser.getUserId());
-        if (user == null) {
-            throw new AuthenticationCredentialsNotFoundException("当前用户不存在");
-        }
-        assertEnabled(user);
+        SysUser user = sysUserService.findByUserId(loginUser.getUserId())
+                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("当前用户不存在"));
+        sysUserService.assertEnabled(user);
         return sysUserConverter.toLoginUserResponse(user);
     }
 
+    @Override
     public void logout() {
         // 最小登录版本不维护服务端 token 黑名单，由客户端删除 token 完成退出。
     }
@@ -75,25 +73,4 @@ public class AdminAuthService {
                 refreshToken.expiresIn(),
                 sysUserConverter.toLoginUserResponse(user));
     }
-
-    private SysUser findByUsername(String username) {
-        return sysUserMapper.selectOne(new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getSysUserCode, username)
-                .eq(SysUser::getDeleted, NOT_DELETED)
-                .last("limit 1"));
-    }
-
-    private SysUser findById(String userId) {
-        return sysUserMapper.selectOne(new LambdaQueryWrapper<SysUser>()
-                .eq(SysUser::getSysUserId, userId)
-                .eq(SysUser::getDeleted, NOT_DELETED)
-                .last("limit 1"));
-    }
-
-    private void assertEnabled(SysUser user) {
-        if (!Integer.valueOf(ENABLED_STATUS).equals(user.getSysUserStatus())) {
-            throw new DisabledException("用户已禁用");
-        }
-    }
-
 }

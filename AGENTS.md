@@ -49,7 +49,10 @@
 
 ## 后端编码规则
 
-- Controller 只处理请求接入、参数绑定和响应包装；Service 负责业务规则和事务边界；Mapper 只负责数据库访问。
+- 业务代码按模块优先组织为 `controller`、`facade`、`service`、`domain`、`mapper`；`domain` 下按 `entity`、`dto` 等职责继续分包，避免按全局技术层跨业务聚集。
+- Controller 只处理请求接入、参数绑定和响应包装，只依赖 Facade；Facade 编排业务用例、认证上下文和多个 Service，不返回 `R<T>`；Service 负责业务规则和事务边界；Mapper 只负责数据库访问。
+- Facade 抽象接口使用 `I*Facade` 命名，实现类放在同级 `facade.impl` 子包且不加 `Impl` 后缀；Facade 不直接访问 Mapper。
+- 事务注解只放在 Service 实现类或明确的业务 Service 方法，不放在 Controller 或 Facade。
 - 统一响应使用 `R<T>`，成功和业务失败分别使用 `R.success(...)`、`R.failed(...)`，不要在同类接口中新增平行响应壳。
 - 参数校验优先使用 `@Validated`、Bean Validation 注解和明确 DTO；错误交给统一异常或 Controller 层响应处理。
 - 数据访问优先使用 MyBatis-Plus、Mapper 和 Lambda Wrapper，不在业务代码中拼接字符串 SQL。

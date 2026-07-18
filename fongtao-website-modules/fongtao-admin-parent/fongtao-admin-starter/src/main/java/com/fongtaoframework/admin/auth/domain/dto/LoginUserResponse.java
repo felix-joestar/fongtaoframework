@@ -1,4 +1,4 @@
-package com.fongtaoframework.admin.web.dto;
+package com.fongtaoframework.admin.auth.domain.dto;
 
 import java.util.List;
 

@@ -1,10 +1,10 @@
-package com.fongtaoframework.admin.web;
+package com.fongtaoframework.admin.auth.controller;
 
-import com.fongtaoframework.admin.web.dto.LoginRequest;
-import com.fongtaoframework.admin.web.dto.LoginResponse;
-import com.fongtaoframework.admin.web.dto.LoginUserResponse;
-import com.fongtaoframework.admin.web.dto.RefreshTokenRequest;
-import com.fongtaoframework.admin.application.AdminAuthService;
+import com.fongtaoframework.admin.auth.domain.dto.LoginRequest;
+import com.fongtaoframework.admin.auth.domain.dto.LoginResponse;
+import com.fongtaoframework.admin.auth.domain.dto.LoginUserResponse;
+import com.fongtaoframework.admin.auth.domain.dto.RefreshTokenRequest;
+import com.fongtaoframework.admin.auth.facade.IAdminAuthFacade;
 import com.fongtaoframework.core.R;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AdminAuthController {
 
-    private final AdminAuthService adminAuthService;
+    private final IAdminAuthFacade adminAuthFacade;
 
     @PostMapping("/login")
     public ResponseEntity<R<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
         try {
-            return ResponseEntity.ok(R.success(adminAuthService.login(request)));
+            return ResponseEntity.ok(R.success(adminAuthFacade.login(request)));
         } catch (DisabledException ex) {
             return failed(HttpStatus.FORBIDDEN, 403, ex.getMessage());
         } catch (BadCredentialsException ex) {
@@ -42,7 +42,7 @@ public class AdminAuthController {
     @PostMapping("/refresh-token")
     public ResponseEntity<R<LoginResponse>> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
         try {
-            return ResponseEntity.ok(R.success(adminAuthService.refreshToken(request)));
+            return ResponseEntity.ok(R.success(adminAuthFacade.refreshToken(request)));
         } catch (DisabledException ex) {
             return failed(HttpStatus.FORBIDDEN, 403, ex.getMessage());
         } catch (BadCredentialsException ex) {
@@ -53,7 +53,7 @@ public class AdminAuthController {
     @GetMapping("/login-user")
     public ResponseEntity<R<LoginUserResponse>> loginUser() {
         try {
-            return ResponseEntity.ok(R.success(adminAuthService.currentUser()));
+            return ResponseEntity.ok(R.success(adminAuthFacade.loginUser()));
         } catch (AuthenticationCredentialsNotFoundException ex) {
             return failed(HttpStatus.UNAUTHORIZED, 401, ex.getMessage());
         }
@@ -61,7 +61,7 @@ public class AdminAuthController {
 
     @PostMapping("/logout")
     public R<Void> logout() {
-        adminAuthService.logout();
+        adminAuthFacade.logout();
         return R.success();
     }
 

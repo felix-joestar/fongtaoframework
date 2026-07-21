@@ -15,8 +15,11 @@ import org.springframework.validation.BindException;
 import org.springframework.web.ErrorResponseException;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @RestControllerAdvice
 @Slf4j
@@ -31,7 +34,9 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException.class,
             BindException.class,
             ConstraintViolationException.class,
-            HandlerMethodValidationException.class
+            HandlerMethodValidationException.class,
+            MissingServletRequestParameterException.class,
+            HttpMessageNotReadableException.class
     })
     public ResponseEntity<R<Void>> handleValidationException(Exception ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -49,6 +54,11 @@ public class GlobalExceptionHandler {
             message = ErrorCode.INTERNAL_ERROR.message();
         }
         return ResponseEntity.status(ex.getStatusCode()).body(R.failed(status, message));
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<R<Void>> handleNoResourceFoundException(NoResourceFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(R.failed(HttpStatus.NOT_FOUND.value(), "请求路径不存在"));
     }
 
     @ExceptionHandler(Exception.class)

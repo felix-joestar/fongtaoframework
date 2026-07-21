@@ -9,4 +9,5 @@ public record LoginUserResponse(
         String mobile,
         String email,
         String avatarFileId,
-        List<String> permissions) {}
+        List<String> permissions,
+        LoginIdentityResponse defaultIdentity) {}

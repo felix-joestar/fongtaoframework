@@ -4,6 +4,8 @@ import com.fongtaoframework.starter.admin.modules.auth.domain.dto.LoginRequest;
 import com.fongtaoframework.starter.admin.modules.auth.domain.dto.LoginResponse;
 import com.fongtaoframework.starter.admin.modules.auth.domain.dto.LoginUserResponse;
 import com.fongtaoframework.starter.admin.modules.auth.domain.dto.RefreshTokenRequest;
+import com.fongtaoframework.starter.admin.modules.rights.domain.dto.SysResRow;
+import java.util.List;
 
 public interface IAdminAuthFacade {
 
@@ -12,6 +14,8 @@ public interface IAdminAuthFacade {
     LoginResponse refreshToken(RefreshTokenRequest request);
 
     LoginUserResponse loginUser();
+
+    List<SysResRow> loginUserResources();
 
     void logout();
 }

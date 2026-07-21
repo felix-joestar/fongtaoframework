@@ -1,7 +1,7 @@
 # fongtaoframework 项目补充规则
 
 - 通用工程纪律、中文输出和验证诚信继承用户级全局 AGENTS；本文件只记录当前单体脚手架项目特有规则。
-- 修改本文件前必须先说明调整范围；本项目处于早期脚手架阶段，规则应服务“完整 starter 脚手架 + 最小 admin 登录闭环”，不引入暂未实现的平台化约束。
+- 修改本文件前必须先说明调整范围；本项目处于早期脚手架阶段，规则应服务“完整 starter 脚手架 + admin 登录、权限与基础数据能力”，不引入暂未实现的平台化约束。
 - 数据库初始化脚本优先放在提供能力的 starter 内，例如 `fongtao-admin-starter/src/main/resources/META-INF/fongtao-admin/`；涉及表结构或初始化数据时，必须同步脚本和测试。
 
 ## 中文与文案规则
@@ -20,11 +20,11 @@
 - `fongtao-starter-web` 承载 Spring MVC、Jakarta Validation、统一异常、Swagger/OpenAPI 和 JSON 默认配置。
 - `fongtao-starter-mybatis` 承载 MyBatis-Plus、Druid、分页插件和 P6Spy dev/test 配置。
 - `fongtao-starter-security` 只封装 Spring Security、JWT、CORS、认证失败响应、无状态安全链等通用安全能力；不得依赖业务表、admin 实体或 website 模块。
-- `fongtao-starter-cache` 承载 Caffeine 本地缓存、Spring Cache、Spring Data Redis、Redisson、RedisTemplate 和 Redis 序列化基础配置；项目不再保留独立 Redis starter。
+- `fongtao-starter-cache` 承载 Caffeine 本地缓存、Spring Cache、Spring Data Redis、Redisson、RedisTemplate 和 Redis 序列化基础配置；项目不再保留独立 Redis starter。引入该 starter 后 Redis、RedisTemplate 与 Redisson 默认启用，连接信息统一配置在 `spring.data.redis`，缓存策略统一配置在 `spring.cache.redis`，不得新增 `fongtao.cache.redis` 重复连接配置。
 - `fongtao-starter-logging` 承载 trace/request id 处理、敏感信息脱敏和可选请求摘要日志；不得记录完整请求体、响应体、Cookie、Authorization 或 token。
 - `fongtao-starter-lock` 基于 `fongtao-starter-cache` 中的 Redisson 基础能力封装 Lock4j Redisson。
 - `fongtao-starter-file` 承载 x-file-storage；`fongtao-starter-forest` 承载 Forest HTTP 客户端；`fongtao-starter-observability` 承载 Actuator、Arthas，生产默认关闭 Arthas。
-- `fongtao-admin-starter` 承载 admin 最小登录能力，包括用户表、登录、刷新 token、退出、当前用户接口和对应 Mapper/Service/Controller。
+- `fongtao-admin-starter` 承载 admin 登录、权限与基础数据能力，包括用户、组织、角色、资源、角色授权、登录身份、字典、配置、流水号以及登录、刷新 token、退出、当前用户和资源树接口。
 - `fongtao-admin-website` 只作为 `fongtao-admin-starter` 的本地调试启动工程，不沉淀通用业务能力。
 - starter 禁止反向依赖 website 模块；website 可以依赖 starter。
 
@@ -45,7 +45,7 @@
 - starter 自动配置必须通过 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` 注册，并用 `@ConditionalOnMissingBean`、`@ConditionalOnProperty`、`@ConditionalOnClass` 控制装配边界。
 - starter 不得通过 `application.yaml` 偷塞应用级默认配置；需要默认值时使用 properties 默认值或受控的环境默认处理。
 - 子模块不得自行漂移基础依赖版本；新增第三方依赖必须先进入 `fongtao-starter-dependencies` 统一管理。
-- 测试不得依赖真实 Redis、MinIO、外部 HTTP 服务或真实数据库服务；starter 优先使用 `ApplicationContextRunner`，Web/Admin 测试优先使用 MockMvc 或 H2。
+- 测试不得依赖真实 Redis、MinIO、外部 HTTP 服务或真实数据库服务；starter 优先使用 `ApplicationContextRunner`，Web/Admin 测试优先使用 MockMvc；涉及 MyBatis 集成时使用隔离的 Testcontainers MySQL。
 
 ## 后端编码规则
 
@@ -60,8 +60,13 @@
 - 参数校验优先使用 `@Validated`、Bean Validation 注解和明确 DTO；错误交给统一异常或 Controller 层响应处理。
 - 数据访问优先使用 MyBatis-Plus、Mapper 和 Lambda Wrapper，不在业务代码中拼接字符串 SQL。
 - 前后端分离登录默认使用 `Authorization: Bearer <token>`；不创建 HTTP Session，不依赖 Cookie 保存登录态。
-- 第一版只实现最小登录闭环，不实现角色、菜单、按钮权限、组织、数据权限、第三方登录和 OAuth2 授权服务器。
+- admin 当前阶段实现登录、权限与基础数据管理，允许 admin 管理端使用 `@PreAuthorize` 校验资源权限码；不实现第三方登录、OAuth2 授权服务器或通用数据权限 SQL 过滤器，业务模块自行按当前身份的数据范围附加查询条件。
 - 密码必须使用 Spring Security `PasswordEncoder` 校验；生产数据不得使用明文或 `{noop}` 密码。
+- 权限与基础数据管理按表对象优先拆分：每个主表独立提供 `Sys*Controller`、`ISys*Facade`、`facade.impl.Sys*Facade`、`ISys*Service`、`service.impl.Sys*Service`、`Sys*Mapper`、`Sys*Converter` 和对象专属 DTO；禁止以 `Rights`、`Basedata`、`Management` 等跨表聚合类型承载管理用例。
+- 管理接口根路径使用表名的 kebab-case，例如 `sys_org` 对应 `/sys-org`；所有管理动作使用 `POST`，基础动作统一为 `/page`、`/tree`、`/get-by-id`、`/create`、`/update-by-id`、`/delete-by-id`，主键字段使用对应的 `sys*Id`。
+- 权限码统一为 `<工程>:<对象的 kebab-case>:<接口动作>`，资源编码统一为 `<工程>-<对象的 kebab-case>-<接口动作>`；工程标识由各 starter 固定定义，不提供运行时改写。admin starter 固定使用 `admin`，例如 `admin:sys-org:page`、`admin-sys-org-page`；权限动作必须与对应 POST 接口动作一致。
+- 管理 DTO 按对象放在 `domain.dto` 与 `domain.dto.param`：分页查询为 `Sys*PageParam`，新增、更新为 `Sys*CreateParam`、`Sys*UpdateParam`，出参为 `Sys*Row`；不要继续使用泛化 `*Command`、`*View` 或跨表 DTO。
+- `sys_rights_extra` 是 `sys_rights` 的内部子表，只允许由 `SysRights` 的 Facade 和 Service 维护，不新增独立 Controller 或 Facade。
 
 ## 安全与日志规则
 

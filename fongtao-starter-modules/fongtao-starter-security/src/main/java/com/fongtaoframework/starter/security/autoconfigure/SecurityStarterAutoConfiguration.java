@@ -8,6 +8,7 @@ import com.fongtaoframework.starter.security.properties.SecurityStarterPropertie
 import com.fongtaoframework.starter.security.web.BearerTokenAuthenticationFilter;
 import com.fongtaoframework.starter.security.web.JsonAccessDeniedHandler;
 import com.fongtaoframework.starter.security.web.JsonAuthenticationEntryPoint;
+import com.fongtaoframework.starter.security.web.MethodSecurityExceptionHandler;
 import java.util.List;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -18,6 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -31,6 +33,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @AutoConfiguration
+@EnableMethodSecurity
 @ConditionalOnClass(SecurityFilterChain.class)
 @EnableConfigurationProperties(SecurityStarterProperties.class)
 @ConditionalOnProperty(prefix = "fongtao.security", name = "enabled", havingValue = "true", matchIfMissing = true)
@@ -59,6 +62,12 @@ public class SecurityStarterAutoConfiguration {
     @ConditionalOnMissingBean(AccessDeniedHandler.class)
     public JsonAccessDeniedHandler jsonAccessDeniedHandler(ObjectMapper objectMapper) {
         return new JsonAccessDeniedHandler(objectMapper);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public MethodSecurityExceptionHandler methodSecurityExceptionHandler() {
+        return new MethodSecurityExceptionHandler();
     }
 
     @Bean

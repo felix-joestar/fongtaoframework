@@ -1,6 +1,8 @@
 package com.fongtaoframework.starter.admin.modules.rights.controller;
 
-import com.fongtaoframework.core.R;
+import com.fongtaoframework.starter.admin.common.constant.AdminPermissionCodes;
+
+import com.fongtaoframework.starter.core.result.R;
 import com.fongtaoframework.starter.admin.common.constant.RequestPathConstants;
 import com.fongtaoframework.starter.admin.modules.rights.domain.dto.param.SysOrgCreateParam;
 import com.fongtaoframework.starter.admin.modules.rights.domain.dto.param.SysOrgIdParam;
@@ -25,39 +27,39 @@ public class SysOrgController {
     private final ISysOrgFacade sysOrgFacade;
 
     @PostMapping(RequestPathConstants.PAGE)
-    @PreAuthorize("hasAuthority('admin:sys-org:page')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_ORG_PAGE + "')")
     public R<?> page(@RequestBody(required = false) SysOrgPageParam param) {
         return R.success(sysOrgFacade.page(param));
     }
 
     @PostMapping(RequestPathConstants.TREE)
-    @PreAuthorize("hasAuthority('admin:sys-org:tree')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_ORG_TREE + "')")
     public R<List<SysOrgRow>> tree() {
         return R.success(sysOrgFacade.tree());
     }
 
     @PostMapping(RequestPathConstants.GET_BY_ID)
-    @PreAuthorize("hasAuthority('admin:sys-org:get-by-id')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_ORG_GET_BY_ID + "')")
     public R<SysOrgRow> getById(@Valid @RequestBody SysOrgIdParam param) {
         return R.success(sysOrgFacade.getById(param.sysOrgId()));
     }
 
     @PostMapping(RequestPathConstants.CREATE)
-    @PreAuthorize("hasAuthority('admin:sys-org:create')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_ORG_CREATE + "')")
     public R<Void> create(@Valid @RequestBody SysOrgCreateParam param) {
         sysOrgFacade.create(param);
         return R.success();
     }
 
     @PostMapping(RequestPathConstants.UPDATE_BY_ID)
-    @PreAuthorize("hasAuthority('admin:sys-org:update-by-id')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_ORG_UPDATE_BY_ID + "')")
     public R<Void> updateById(@Valid @RequestBody SysOrgUpdateParam param) {
         sysOrgFacade.updateById(param);
         return R.success();
     }
 
     @PostMapping(RequestPathConstants.DELETE_BY_ID)
-    @PreAuthorize("hasAuthority('admin:sys-org:delete-by-id')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_ORG_DELETE_BY_ID + "')")
     public R<Void> deleteById(@Valid @RequestBody SysOrgIdParam param) {
         sysOrgFacade.deleteById(param.sysOrgId());
         return R.success();

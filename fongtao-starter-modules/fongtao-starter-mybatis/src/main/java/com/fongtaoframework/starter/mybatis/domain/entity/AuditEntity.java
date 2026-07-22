@@ -3,6 +3,7 @@ package com.fongtaoframework.starter.mybatis.domain.entity;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +12,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
-public abstract class AuditEntity extends BaseEntity {
+public abstract class AuditEntity implements Serializable {
 
     @TableField(value = "create_id", fill = FieldFill.INSERT, updateStrategy = FieldStrategy.NEVER)
     private String createId;

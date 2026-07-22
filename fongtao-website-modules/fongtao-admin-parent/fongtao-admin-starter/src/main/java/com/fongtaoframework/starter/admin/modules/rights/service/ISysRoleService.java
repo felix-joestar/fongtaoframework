@@ -1,7 +1,7 @@
 package com.fongtaoframework.starter.admin.modules.rights.service;
 
-import com.fongtaoframework.core.PageQuery;
-import com.fongtaoframework.core.PageResult;
+import com.fongtaoframework.starter.core.page.PageQuery;
+import com.fongtaoframework.starter.core.page.PageResult;
 import com.fongtaoframework.starter.admin.modules.rights.domain.entity.SysRole;
 import java.util.List;
 
@@ -11,11 +11,15 @@ public interface ISysRoleService {
 
     List<SysRole> list();
 
-    SysRole get(String sysRoleId);
+    SysRole findById(String sysRoleId);
 
-    void create(SysRole entity);
+    boolean existsByCode(String sysRoleCode, String excludedSysRoleId);
 
-    void updateById(SysRole entity);
+    boolean existsByParentId(String parentId);
 
-    void deleteById(String sysRoleId);
+    boolean save(SysRole entity);
+
+    boolean updateById(SysRole entity);
+
+    boolean deleteById(String sysRoleId);
 }

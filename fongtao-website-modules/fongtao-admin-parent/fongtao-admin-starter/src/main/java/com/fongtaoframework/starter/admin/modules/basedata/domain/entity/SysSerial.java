@@ -1,6 +1,5 @@
 package com.fongtaoframework.starter.admin.modules.basedata.domain.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fongtaoframework.starter.mybatis.domain.entity.CrudEntity;
@@ -12,7 +11,7 @@ import lombok.Setter;
 @TableName("sys_serial")
 public class SysSerial extends CrudEntity {
 
-    @TableId(value = "sys_serial_id", type = IdType.INPUT)
+    @TableId("sys_serial_id")
     private String sysSerialId;
     private String serialCode;
     private String serialName;

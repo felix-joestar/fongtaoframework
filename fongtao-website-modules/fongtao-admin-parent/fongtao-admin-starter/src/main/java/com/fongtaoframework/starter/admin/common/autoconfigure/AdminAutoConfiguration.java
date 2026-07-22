@@ -1,6 +1,7 @@
 package com.fongtaoframework.starter.admin.common.autoconfigure;
 
 import com.fongtaoframework.starter.admin.common.properties.AdminProperties;
+import com.fongtaoframework.starter.mybatis.autoconfigure.MybatisStarterAutoConfiguration;
 import org.apache.ibatis.annotations.Mapper;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -11,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  * Admin starter auto-configuration entry point.
  */
-@AutoConfiguration
+@AutoConfiguration(before = MybatisStarterAutoConfiguration.class)
 @ComponentScan(basePackages = "com.fongtaoframework.starter.admin.modules")
 @MapperScan(
         basePackages = "com.fongtaoframework.starter.admin.modules",

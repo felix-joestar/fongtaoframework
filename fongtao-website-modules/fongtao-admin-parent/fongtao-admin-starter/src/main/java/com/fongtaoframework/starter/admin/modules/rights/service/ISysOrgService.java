@@ -1,7 +1,7 @@
 package com.fongtaoframework.starter.admin.modules.rights.service;
 
-import com.fongtaoframework.core.PageQuery;
-import com.fongtaoframework.core.PageResult;
+import com.fongtaoframework.starter.core.page.PageQuery;
+import com.fongtaoframework.starter.core.page.PageResult;
 import com.fongtaoframework.starter.admin.modules.rights.domain.entity.SysOrg;
 import java.util.List;
 
@@ -11,11 +11,15 @@ public interface ISysOrgService {
 
     List<SysOrg> list();
 
-    SysOrg get(String sysOrgId);
+    SysOrg findById(String sysOrgId);
 
-    void create(SysOrg entity);
+    boolean existsByCode(String sysOrgCode, String excludedSysOrgId);
 
-    void updateById(SysOrg entity);
+    boolean existsByParentId(String parentId);
 
-    void deleteById(String sysOrgId);
+    boolean save(SysOrg entity);
+
+    boolean updateById(SysOrg entity);
+
+    boolean deleteById(String sysOrgId);
 }

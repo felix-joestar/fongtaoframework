@@ -1,20 +1,22 @@
 package com.fongtaoframework.starter.admin.modules.basedata.service;
 
-import com.fongtaoframework.core.PageQuery;
-import com.fongtaoframework.core.PageResult;
+import com.fongtaoframework.starter.core.page.PageQuery;
+import com.fongtaoframework.starter.core.page.PageResult;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.entity.SysSerial;
 
 public interface ISysSerialService {
 
     PageResult<SysSerial> page(PageQuery pageQuery);
 
-    SysSerial get(String sysSerialId);
+    SysSerial findById(String sysSerialId);
 
-    void create(SysSerial entity);
+    SysSerial findByCodeForUpdate(String serialCode);
 
-    void updateById(SysSerial entity);
+    boolean existsByCode(String serialCode, String excludedSysSerialId);
 
-    void deleteById(String sysSerialId);
+    boolean save(SysSerial entity);
 
-    String next(String serialCode);
+    boolean updateById(SysSerial entity);
+
+    boolean deleteById(String sysSerialId);
 }

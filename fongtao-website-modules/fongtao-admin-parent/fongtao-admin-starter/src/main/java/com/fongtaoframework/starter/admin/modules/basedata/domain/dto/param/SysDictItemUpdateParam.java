@@ -11,6 +11,7 @@ public record SysDictItemUpdateParam(
         @NotBlank @Size(max = 128) String dictItemLabel,
         @NotNull Integer enabled,
         Integer sortNo,
-        @Size(max = 500) String remark
+        @Size(max = 500) String remark,
+        @NotNull Long version
 ) {
 }

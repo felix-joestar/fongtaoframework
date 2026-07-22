@@ -1,22 +1,22 @@
 package com.fongtaoframework.starter.admin.modules.basedata.service;
 
-import com.fongtaoframework.core.PageQuery;
-import com.fongtaoframework.core.PageResult;
+import com.fongtaoframework.starter.core.page.PageQuery;
+import com.fongtaoframework.starter.core.page.PageResult;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.entity.SysDict;
-import com.fongtaoframework.starter.admin.modules.basedata.domain.entity.SysDictItem;
-import java.util.List;
 
 public interface ISysDictService {
 
     PageResult<SysDict> page(PageQuery pageQuery);
 
-    SysDict get(String sysDictId);
+    SysDict findById(String sysDictId);
 
-    void create(SysDict entity);
+    SysDict findEnabledByCode(String sysDictCode);
 
-    void updateById(SysDict entity);
+    boolean existsByCode(String sysDictCode, String excludedSysDictId);
 
-    void deleteById(String sysDictId);
+    boolean save(SysDict entity);
 
-    List<SysDictItem> listEnabledItems(String sysDictCode);
+    boolean updateById(SysDict entity);
+
+    boolean deleteById(String sysDictId);
 }

@@ -1,6 +1,6 @@
 package com.fongtaoframework.starter.admin.modules.rights.facade;
 
-import com.fongtaoframework.core.PageResult;
+import com.fongtaoframework.starter.core.page.PageResult;
 import com.fongtaoframework.starter.admin.modules.rights.domain.dto.SysResRow;
 import com.fongtaoframework.starter.admin.modules.rights.domain.dto.param.SysResCreateParam;
 import com.fongtaoframework.starter.admin.modules.rights.domain.dto.param.SysResPageParam;

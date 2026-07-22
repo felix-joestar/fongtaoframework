@@ -1,7 +1,7 @@
 package com.fongtaoframework.starter.admin.modules.rights.service;
 
-import com.fongtaoframework.core.PageQuery;
-import com.fongtaoframework.core.PageResult;
+import com.fongtaoframework.starter.core.page.PageQuery;
+import com.fongtaoframework.starter.core.page.PageResult;
 import com.fongtaoframework.starter.admin.modules.rights.domain.entity.SysUser;
 import java.util.Optional;
 
@@ -13,17 +13,11 @@ public interface ISysUserService {
 
     PageResult<SysUser> page(PageQuery pageQuery);
 
-    SysUser get(String userId);
+    boolean existsByUserCode(String sysUserCode, String excludedSysUserId);
 
-    void save(SysUser user);
+    boolean save(SysUser user);
 
-    void update(SysUser user);
+    boolean updateById(SysUser user);
 
-    void delete(String userId);
-
-    void updateStatus(String userId, Integer status);
-
-    void resetPassword(String userId, String encodedPassword);
-
-    void assertEnabled(SysUser user);
+    boolean deleteById(String sysUserId);
 }

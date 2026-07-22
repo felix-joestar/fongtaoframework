@@ -2,10 +2,10 @@ package com.fongtaoframework.starter.web.exception;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
-import com.fongtaoframework.core.BusinessException;
-import com.fongtaoframework.core.ErrorCode;
-import com.fongtaoframework.core.R;
-import com.fongtaoframework.core.TraceIdContext;
+import com.fongtaoframework.starter.core.exception.BusinessException;
+import com.fongtaoframework.starter.core.result.CommonErrorCode;
+import com.fongtaoframework.starter.core.result.R;
+import com.fongtaoframework.starter.core.trace.TraceIdContext;
 import com.fongtaoframework.starter.logging.support.SensitiveDataSanitizer;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
     })
     public ResponseEntity<R<Void>> handleValidationException(Exception ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(R.failed(ErrorCode.PARAM_ERROR.code(), firstMessage(ex)));
+                .body(R.failed(CommonErrorCode.PARAM_ERROR.code(), firstMessage(ex)));
     }
 
     @ExceptionHandler(ErrorResponseException.class)
@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
             message = ex.getMessage();
         }
         if (StrUtil.isBlank(message)) {
-            message = ErrorCode.INTERNAL_ERROR.message();
+            message = CommonErrorCode.INTERNAL_ERROR.message();
         }
         return ResponseEntity.status(ex.getStatusCode()).body(R.failed(status, message));
     }
@@ -68,7 +68,7 @@ public class GlobalExceptionHandler {
                 TraceIdContext.currentOrCreate(),
                 ex.getClass().getName(),
                 SensitiveDataSanitizer.maskLine(ex.getMessage()));
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(R.failed(ErrorCode.INTERNAL_ERROR));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(R.failed(CommonErrorCode.INTERNAL_ERROR));
     }
 
     private String firstMessage(Exception ex) {

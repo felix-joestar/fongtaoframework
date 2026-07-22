@@ -12,6 +12,7 @@ public record SysOrgUpdateParam(
         @NotBlank @Size(max = 32) String sysOrgType,
         @NotNull Integer enabled,
         Integer sortNo,
-        @Size(max = 500) String remark
+        @Size(max = 500) String remark,
+        @NotNull Long version
 ) {
 }

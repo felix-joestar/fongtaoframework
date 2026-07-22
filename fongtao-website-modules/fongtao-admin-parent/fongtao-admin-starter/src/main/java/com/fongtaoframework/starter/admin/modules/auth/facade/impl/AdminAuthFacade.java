@@ -1,6 +1,8 @@
 package com.fongtaoframework.starter.admin.modules.auth.facade.impl;
 
 import org.springframework.stereotype.Component;
+import com.fongtaoframework.starter.core.exception.BusinessException;
+import com.fongtaoframework.starter.core.util.TreeUtil;
 import com.fongtaoframework.starter.admin.modules.auth.converter.LoginUserConverter;
 import com.fongtaoframework.starter.admin.modules.auth.domain.dto.LoginRequest;
 import com.fongtaoframework.starter.admin.modules.auth.domain.dto.LoginResponse;
@@ -12,7 +14,7 @@ import com.fongtaoframework.starter.admin.modules.rights.converter.SysResConvert
 import com.fongtaoframework.starter.admin.modules.rights.domain.dto.SysResRow;
 import com.fongtaoframework.starter.admin.modules.rights.domain.entity.SysRights;
 import com.fongtaoframework.starter.admin.modules.rights.domain.entity.SysUser;
-import com.fongtaoframework.starter.admin.modules.rights.service.ISysResService;
+import com.fongtaoframework.starter.admin.modules.rights.service.ISysRoleAuthService;
 import com.fongtaoframework.starter.admin.modules.rights.service.ISysRightsService;
 import com.fongtaoframework.starter.admin.modules.rights.service.ISysUserService;
 import com.fongtaoframework.starter.security.jwt.JwtTokenService;
@@ -24,12 +26,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 @RequiredArgsConstructor
 @Component
@@ -40,7 +37,7 @@ public class AdminAuthFacade implements IAdminAuthFacade {
     private final JwtTokenService jwtTokenService;
     private final LoginUserConverter loginUserConverter;
     private final ISysRightsService sysRightsService;
-    private final ISysResService sysResService;
+    private final ISysRoleAuthService sysRoleAuthService;
     private final SysResConverter sysResConverter;
 
     @Override
@@ -49,7 +46,7 @@ public class AdminAuthFacade implements IAdminAuthFacade {
         if (user == null || !passwordEncoder.matches(request.password(), user.getSysUserPwd())) {
             throw new BadCredentialsException("账号或密码错误");
         }
-        sysUserService.assertEnabled(user);
+        assertEnabled(user);
         return createLoginResponse(user);
     }
 
@@ -60,7 +57,7 @@ public class AdminAuthFacade implements IAdminAuthFacade {
         if (user == null) {
             throw new BadCredentialsException("refresh token 无效");
         }
-        sysUserService.assertEnabled(user);
+        assertEnabled(user);
         return createLoginResponse(user);
     }
 
@@ -72,10 +69,14 @@ public class AdminAuthFacade implements IAdminAuthFacade {
 
     @Override
     public List<SysResRow> loginUserResources() {
-        List<SysResRow> rows = sysResService.listVisibleByUserId(currentUser().getSysUserId()).stream()
+        List<SysResRow> rows = sysRoleAuthService.listEffectiveResourcesByUserId(currentUser().getSysUserId()).stream()
                 .map(sysResConverter::toRow)
                 .toList();
-        return buildResourceTree(rows);
+        try {
+            return TreeUtil.build(rows, SysResRow::sysResId, SysResRow::parentId, SysResRow::withChildren);
+        } catch (IllegalArgumentException exception) {
+            throw new BusinessException("资源层级存在循环", exception);
+        }
     }
 
     @Override
@@ -88,8 +89,14 @@ public class AdminAuthFacade implements IAdminAuthFacade {
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("未登录或登录已过期"));
         SysUser user = sysUserService.findByUserId(loginUser.getUserId())
                 .orElseThrow(() -> new AuthenticationCredentialsNotFoundException("当前用户不存在"));
-        sysUserService.assertEnabled(user);
+        assertEnabled(user);
         return user;
+    }
+
+    private void assertEnabled(SysUser user) {
+        if (!Integer.valueOf(1).equals(user.getSysUserStatus())) {
+            throw new org.springframework.security.authentication.DisabledException("用户已禁用");
+        }
     }
 
     private LoginResponse createLoginResponse(SysUser user) {
@@ -107,37 +114,7 @@ public class AdminAuthFacade implements IAdminAuthFacade {
 
     private List<String> permissions(SysUser user) {
         defaultRights(user);
-        return sysResService.listEnabledPermissionCodesByUserId(user.getSysUserId());
-    }
-
-    private List<SysResRow> buildResourceTree(List<SysResRow> rows) {
-        Map<String, List<SysResRow>> childrenByParentId = new LinkedHashMap<>();
-        Set<String> resourceIds = new HashSet<>();
-        for (SysResRow row : rows) {
-            resourceIds.add(row.sysResId());
-            childrenByParentId.computeIfAbsent(row.parentId(), ignored -> new ArrayList<>()).add(row);
-        }
-        List<SysResRow> roots = rows.stream()
-                .filter(row -> cn.hutool.core.util.StrUtil.isBlank(row.parentId())
-                        || !resourceIds.contains(row.parentId()))
-                .toList();
-        if (roots.isEmpty() && !rows.isEmpty()) {
-            roots = rows;
-        }
-        return roots.stream()
-                .map(row -> attachChildren(row, childrenByParentId, new HashSet<>()))
-                .toList();
-    }
-
-    private SysResRow attachChildren(
-            SysResRow row, Map<String, List<SysResRow>> childrenByParentId, Set<String> ancestorIds) {
-        if (!ancestorIds.add(row.sysResId())) {
-            return SysResRow.withChildren(row, List.of());
-        }
-        List<SysResRow> children = childrenByParentId.getOrDefault(row.sysResId(), List.of()).stream()
-                .map(child -> attachChildren(child, childrenByParentId, new HashSet<>(ancestorIds)))
-                .toList();
-        return SysResRow.withChildren(row, children);
+        return sysRoleAuthService.listEffectivePermissionCodesByUserId(user.getSysUserId());
     }
 
     private LoginIdentityResponse defaultIdentity(SysUser user) {

@@ -18,6 +18,7 @@ public record SysResUpdateParam(
         @NotNull Integer enabled,
         Integer sortNo,
         String sysData,
-        @Size(max = 500) String remark
+        @Size(max = 500) String remark,
+        @NotNull Long version
 ) {
 }

@@ -1,6 +1,8 @@
 package com.fongtaoframework.starter.admin.modules.basedata.controller;
 
-import com.fongtaoframework.core.R;
+import com.fongtaoframework.starter.admin.common.constant.AdminPermissionCodes;
+
+import com.fongtaoframework.starter.core.result.R;
 import com.fongtaoframework.starter.admin.common.constant.RequestPathConstants;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.dto.SysDictItemRow;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.dto.param.SysDictItemCreateParam;
@@ -24,33 +26,33 @@ public class SysDictItemController {
     private final ISysDictItemFacade sysDictItemFacade;
 
     @PostMapping(RequestPathConstants.PAGE)
-    @PreAuthorize("hasAuthority('admin:sys-dict-item:page')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_DICT_ITEM_PAGE + "')")
     public R<?> page(@RequestBody(required = false) SysDictItemPageParam param) {
         return R.success(sysDictItemFacade.page(param));
     }
 
     @PostMapping(RequestPathConstants.GET_BY_ID)
-    @PreAuthorize("hasAuthority('admin:sys-dict-item:get-by-id')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_DICT_ITEM_GET_BY_ID + "')")
     public R<SysDictItemRow> getById(@Valid @RequestBody SysDictItemIdParam param) {
         return R.success(sysDictItemFacade.getById(param.sysDictItemId()));
     }
 
     @PostMapping(RequestPathConstants.CREATE)
-    @PreAuthorize("hasAuthority('admin:sys-dict-item:create')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_DICT_ITEM_CREATE + "')")
     public R<Void> create(@Valid @RequestBody SysDictItemCreateParam param) {
         sysDictItemFacade.create(param);
         return R.success();
     }
 
     @PostMapping(RequestPathConstants.UPDATE_BY_ID)
-    @PreAuthorize("hasAuthority('admin:sys-dict-item:update-by-id')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_DICT_ITEM_UPDATE_BY_ID + "')")
     public R<Void> updateById(@Valid @RequestBody SysDictItemUpdateParam param) {
         sysDictItemFacade.updateById(param);
         return R.success();
     }
 
     @PostMapping(RequestPathConstants.DELETE_BY_ID)
-    @PreAuthorize("hasAuthority('admin:sys-dict-item:delete-by-id')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_DICT_ITEM_DELETE_BY_ID + "')")
     public R<Void> deleteById(@Valid @RequestBody SysDictItemIdParam param) {
         sysDictItemFacade.deleteById(param.sysDictItemId());
         return R.success();

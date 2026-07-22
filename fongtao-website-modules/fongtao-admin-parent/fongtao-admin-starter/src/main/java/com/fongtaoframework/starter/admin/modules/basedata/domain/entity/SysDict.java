@@ -1,6 +1,5 @@
 package com.fongtaoframework.starter.admin.modules.basedata.domain.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fongtaoframework.starter.mybatis.domain.entity.CrudEntity;
@@ -12,7 +11,7 @@ import lombok.Setter;
 @TableName("sys_dict")
 public class SysDict extends CrudEntity {
 
-    @TableId(value = "sys_dict_id", type = IdType.INPUT)
+    @TableId("sys_dict_id")
     private String sysDictId;
     private String sysDictCode;
     private String sysDictName;

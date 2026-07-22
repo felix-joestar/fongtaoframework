@@ -1,6 +1,5 @@
 package com.fongtaoframework.starter.cache.autoconfigure;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.fongtaoframework.starter.cache.properties.CacheStarterProperties;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -33,7 +32,6 @@ class CacheStarterAutoConfigurationTest {
                         "fongtao.cache.caffeine.expire-after-write=15m")
                 .run(context -> {
                     assertThat(context).hasSingleBean(CacheStarterProperties.class);
-                    assertThat(context).hasSingleBean(Caffeine.class);
                     assertThat(context).hasSingleBean(CacheManager.class);
                     assertThat(context.getBean(CacheManager.class)).isInstanceOf(CaffeineCacheManager.class);
                     assertThat(context.getBean(CacheStarterProperties.class).getCaffeine().getCacheNames())

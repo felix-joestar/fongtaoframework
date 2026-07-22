@@ -1,6 +1,6 @@
 package com.fongtaoframework.starter.admin.modules.basedata.facade;
 
-import com.fongtaoframework.core.PageResult;
+import com.fongtaoframework.starter.core.page.PageResult;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.dto.SysConfigRow;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.dto.param.SysConfigCreateParam;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.dto.param.SysConfigPageParam;

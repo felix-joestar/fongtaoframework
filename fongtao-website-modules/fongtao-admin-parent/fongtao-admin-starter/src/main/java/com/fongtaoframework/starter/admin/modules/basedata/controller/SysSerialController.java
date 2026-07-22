@@ -1,6 +1,8 @@
 package com.fongtaoframework.starter.admin.modules.basedata.controller;
 
-import com.fongtaoframework.core.R;
+import com.fongtaoframework.starter.admin.common.constant.AdminPermissionCodes;
+
+import com.fongtaoframework.starter.core.result.R;
 import com.fongtaoframework.starter.admin.common.constant.RequestPathConstants;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.dto.SysSerialRow;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.dto.param.SysSerialCreateParam;
@@ -25,40 +27,40 @@ public class SysSerialController {
     private final ISysSerialFacade sysSerialFacade;
 
     @PostMapping(RequestPathConstants.PAGE)
-    @PreAuthorize("hasAuthority('admin:sys-serial:page')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_SERIAL_PAGE + "')")
     public R<?> page(@RequestBody(required = false) SysSerialPageParam param) {
         return R.success(sysSerialFacade.page(param));
     }
 
     @PostMapping(RequestPathConstants.GET_BY_ID)
-    @PreAuthorize("hasAuthority('admin:sys-serial:get-by-id')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_SERIAL_GET_BY_ID + "')")
     public R<SysSerialRow> getById(@Valid @RequestBody SysSerialIdParam param) {
         return R.success(sysSerialFacade.getById(param.sysSerialId()));
     }
 
     @PostMapping(RequestPathConstants.CREATE)
-    @PreAuthorize("hasAuthority('admin:sys-serial:create')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_SERIAL_CREATE + "')")
     public R<Void> create(@Valid @RequestBody SysSerialCreateParam param) {
         sysSerialFacade.create(param);
         return R.success();
     }
 
     @PostMapping(RequestPathConstants.UPDATE_BY_ID)
-    @PreAuthorize("hasAuthority('admin:sys-serial:update-by-id')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_SERIAL_UPDATE_BY_ID + "')")
     public R<Void> updateById(@Valid @RequestBody SysSerialUpdateParam param) {
         sysSerialFacade.updateById(param);
         return R.success();
     }
 
     @PostMapping(RequestPathConstants.DELETE_BY_ID)
-    @PreAuthorize("hasAuthority('admin:sys-serial:delete-by-id')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_SERIAL_DELETE_BY_ID + "')")
     public R<Void> deleteById(@Valid @RequestBody SysSerialIdParam param) {
         sysSerialFacade.deleteById(param.sysSerialId());
         return R.success();
     }
 
     @PostMapping("/next")
-    @PreAuthorize("hasAuthority('admin:sys-serial:next')")
+    @PreAuthorize("hasAuthority('" + AdminPermissionCodes.SYS_SERIAL_NEXT + "')")
     public R<String> next(@Valid @RequestBody SysSerialNextParam param) {
         return R.success(sysSerialFacade.next(param.serialCode()));
     }

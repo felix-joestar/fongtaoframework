@@ -1,9 +1,11 @@
 package com.fongtaoframework.starter.admin.modules.rights.facade.impl;
 
-import org.springframework.stereotype.Component;
-import cn.hutool.core.util.IdUtil;
-import com.fongtaoframework.core.PageQuery;
-import com.fongtaoframework.core.PageResult;
+import cn.hutool.core.util.StrUtil;
+import com.fongtaoframework.starter.core.exception.BusinessException;
+import com.fongtaoframework.starter.core.page.PageQuery;
+import com.fongtaoframework.starter.core.page.PageResult;
+import com.fongtaoframework.starter.core.util.TreeUtil;
+import com.fongtaoframework.starter.admin.common.enums.ResourceType;
 import com.fongtaoframework.starter.admin.modules.rights.converter.SysResConverter;
 import com.fongtaoframework.starter.admin.modules.rights.domain.dto.SysResRow;
 import com.fongtaoframework.starter.admin.modules.rights.domain.dto.param.SysResCreateParam;
@@ -12,63 +14,119 @@ import com.fongtaoframework.starter.admin.modules.rights.domain.dto.param.SysRes
 import com.fongtaoframework.starter.admin.modules.rights.domain.entity.SysRes;
 import com.fongtaoframework.starter.admin.modules.rights.facade.ISysResFacade;
 import com.fongtaoframework.starter.admin.modules.rights.service.ISysResService;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import com.fongtaoframework.starter.admin.modules.rights.service.ISysRoleAuthService;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Component
 public class SysResFacade implements ISysResFacade {
 
     private final ISysResService sysResService;
+    private final ISysRoleAuthService sysRoleAuthService;
     private final SysResConverter sysResConverter;
 
     @Override
     public PageResult<SysResRow> page(SysResPageParam param) {
         SysResPageParam pageParam = param == null ? new SysResPageParam(null, null) : param;
         PageResult<SysRes> page = sysResService.page(PageQuery.of(pageParam.pageNo(), pageParam.pageSize()));
-        return PageResult.of(page.records().stream().map(sysResConverter::toRow).toList(), page.total(),
-                page.pageNo(), page.pageSize());
+        return page.map(sysResConverter::toRow);
     }
 
     @Override
     public List<SysResRow> tree() {
-        Map<String, List<SysRes>> children = new LinkedHashMap<>();
-        List<SysRes> roots = new ArrayList<>();
-        for (SysRes entity : sysResService.list()) {
-            if (entity.getParentId() == null || entity.getParentId().isBlank()) {
-                roots.add(entity);
-            } else {
-                children.computeIfAbsent(entity.getParentId(), ignored -> new ArrayList<>()).add(entity);
-            }
+        try {
+            return TreeUtil.build(sysResService.list().stream().map(sysResConverter::toRow).toList(),
+                    SysResRow::sysResId, SysResRow::parentId, SysResRow::withChildren);
+        } catch (IllegalArgumentException exception) {
+            throw new BusinessException("资源层级存在循环", exception);
         }
-        return roots.stream().map(entity -> toTreeRow(entity, children)).toList();
     }
 
     @Override
-    public SysResRow getById(String sysResId) { return sysResConverter.toRow(sysResService.get(sysResId)); }
+    public SysResRow getById(String sysResId) {
+        return sysResConverter.toRow(require(sysResId));
+    }
 
     @Override
+    @Transactional
     public void create(SysResCreateParam param) {
         SysRes entity = sysResConverter.toEntity(param);
-        entity.setSysResId(IdUtil.simpleUUID());
-        sysResService.create(entity);
+        assertParent(entity.getSysResId(), entity.getParentId());
+        assertCodeUnique(entity.getSysResCode(), null);
+        assertType(entity.getSysResType());
+        if (!sysResService.save(entity)) {
+            throw new BusinessException("资源新增失败");
+        }
     }
 
     @Override
-    public void updateById(SysResUpdateParam param) { sysResService.updateById(sysResConverter.toEntity(param)); }
+    @Transactional
+    public void updateById(SysResUpdateParam param) {
+        SysRes entity = sysResConverter.toEntity(param);
+        require(entity.getSysResId());
+        assertParent(entity.getSysResId(), entity.getParentId());
+        assertCodeUnique(entity.getSysResCode(), entity.getSysResId());
+        assertType(entity.getSysResType());
+        if (!sysResService.updateById(entity)) {
+            throw new BusinessException("资源更新失败");
+        }
+    }
 
     @Override
-    public void deleteById(String sysResId) { sysResService.deleteById(sysResId); }
-
-    private SysResRow toTreeRow(SysRes entity, Map<String, List<SysRes>> childrenByParent) {
-        SysResRow row = sysResConverter.toRow(entity);
-        List<SysResRow> children = childrenByParent.getOrDefault(entity.getSysResId(), List.of()).stream()
-                .map(child -> toTreeRow(child, childrenByParent)).toList();
-        return new SysResRow(row.sysResId(), row.parentId(), row.sysResCode(), row.sysResName(), row.sysResType(),
-                row.permissionCode(), row.routePath(), row.componentPath(), row.icon(), row.visibled(), row.enabled(),
-                row.sortNo(), row.sysData(), row.remark(), children);
+    @Transactional
+    public void deleteById(String sysResId) {
+        require(sysResId);
+        if (sysResService.existsByParentId(sysResId)) {
+            throw new BusinessException("资源存在下级，不能删除");
+        }
+        if (sysRoleAuthService.existsByResId(sysResId)) {
+            throw new BusinessException("资源仍被角色授权引用，不能删除");
+        }
+        if (!sysResService.deleteById(sysResId)) {
+            throw new BusinessException("资源删除失败");
+        }
     }
+
+    private SysRes require(String sysResId) {
+        SysRes entity = sysResService.findById(sysResId);
+        if (entity == null) {
+            throw new BusinessException("资源不存在或已删除");
+        }
+        return entity;
+    }
+
+    private void assertParent(String currentId, String parentId) {
+        if (StrUtil.isBlank(parentId)) {
+            return;
+        }
+        if (StrUtil.equals(currentId, parentId)) {
+            throw new BusinessException("资源不能设置自身为上级");
+        }
+        String parent = parentId;
+        Set<String> visited = new HashSet<>();
+        while (StrUtil.isNotBlank(parent)) {
+            if (!visited.add(parent) || StrUtil.equals(currentId, parent)) {
+                throw new BusinessException("资源层级存在循环");
+            }
+            parent = require(parent).getParentId();
+        }
+    }
+
+    private void assertCodeUnique(String sysResCode, String currentId) {
+        if (sysResService.existsByCode(sysResCode, currentId)) {
+            throw new BusinessException("资源编码已存在");
+        }
+    }
+
+    private void assertType(String type) {
+        if (!ResourceType.supports(type)) {
+            throw new BusinessException("资源类型不支持");
+        }
+    }
+
 }

@@ -6,7 +6,15 @@ import java.util.List;
 
 public interface ISysRoleAuthService {
 
-    List<SysRes> listAuthResources(String sysRoleId);
+    List<String> listResourceIdsByRoleId(String sysRoleId);
 
-    void replaceAuthResources(String sysRoleId, List<SysRoleAuth> sysRoleAuths);
+    List<SysRes> listEffectiveResourcesByUserId(String sysUserId);
+
+    List<String> listEffectivePermissionCodesByUserId(String sysUserId);
+
+    boolean existsByRoleId(String sysRoleId);
+
+    boolean existsByResId(String sysResId);
+
+    boolean replaceByRoleId(String sysRoleId, List<SysRoleAuth> sysRoleAuths);
 }

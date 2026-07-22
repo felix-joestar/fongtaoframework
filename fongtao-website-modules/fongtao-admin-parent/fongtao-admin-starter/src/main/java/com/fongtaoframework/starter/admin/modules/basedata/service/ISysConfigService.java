@@ -1,20 +1,22 @@
 package com.fongtaoframework.starter.admin.modules.basedata.service;
 
-import com.fongtaoframework.core.PageQuery;
-import com.fongtaoframework.core.PageResult;
+import com.fongtaoframework.starter.core.page.PageQuery;
+import com.fongtaoframework.starter.core.page.PageResult;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.entity.SysConfig;
 
 public interface ISysConfigService {
 
     PageResult<SysConfig> page(PageQuery pageQuery);
 
-    SysConfig get(String sysConfigId);
+    SysConfig findById(String sysConfigId);
 
-    SysConfig getByCode(String sysConfigCode);
+    SysConfig findByCode(String sysConfigCode);
 
-    void create(SysConfig entity);
+    boolean existsByCode(String sysConfigCode, String excludedSysConfigId);
 
-    void updateById(SysConfig entity);
+    boolean save(SysConfig entity);
 
-    void deleteById(String sysConfigId);
+    boolean updateById(SysConfig entity);
+
+    boolean deleteById(String sysConfigId);
 }

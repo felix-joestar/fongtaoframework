@@ -12,8 +12,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "fongtao.security")
 public class SecurityStarterProperties {
 
-    public static final String DEFAULT_JWT_SECRET = "change-this-fongtao-jwt-secret-32bytes";
-
     private boolean enabled = true;
     private List<String> permitPaths = new ArrayList<>(List.of(
             "/auth/login",
@@ -30,7 +28,7 @@ public class SecurityStarterProperties {
     public static class Jwt {
 
         private String issuer = "fongtao";
-        private String secret = DEFAULT_JWT_SECRET;
+        private String secret;
         private Duration accessTokenTtl = Duration.ofMinutes(30);
         private Duration refreshTokenTtl = Duration.ofDays(7);
     }
@@ -39,7 +37,7 @@ public class SecurityStarterProperties {
     @Setter
     public static class Cors {
 
-        private List<String> allowedOriginPatterns = new ArrayList<>(List.of("*"));
+        private List<String> allowedOriginPatterns = new ArrayList<>();
         private List<String> allowedMethods = new ArrayList<>(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         private List<String> allowedHeaders = new ArrayList<>(List.of("*"));
         private List<String> exposedHeaders = new ArrayList<>(List.of("Authorization"));

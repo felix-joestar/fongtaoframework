@@ -13,6 +13,7 @@ public record SysRightsUpdateParam(
         @NotNull Integer enabled,
         @NotBlank @Size(max = 32) String dataScope,
         @Size(max = 500) String remark,
-        java.util.List<String> customSysOrgIds
+        java.util.List<String> customSysOrgIds,
+        @NotNull Long version
 ) {
 }

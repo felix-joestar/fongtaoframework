@@ -1,8 +1,8 @@
 package com.fongtaoframework.starter.web;
 
-import com.fongtaoframework.core.BusinessException;
-import com.fongtaoframework.core.ErrorCode;
-import com.fongtaoframework.core.R;
+import com.fongtaoframework.starter.core.exception.BusinessException;
+import com.fongtaoframework.starter.core.result.CommonErrorCode;
+import com.fongtaoframework.starter.core.result.R;
 import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -37,7 +37,7 @@ class WebExceptionContractTest {
         mockMvc.perform(get("/business").header("X-Trace-Id", "trace-001"))
                 .andExpect(status().isBadRequest())
                 .andExpect(header().string("X-Trace-Id", "trace-001"))
-                .andExpect(jsonPath("$.code").value(ErrorCode.BUSINESS_ERROR.code()))
+                .andExpect(jsonPath("$.code").value(CommonErrorCode.BUSINESS_ERROR.code()))
                 .andExpect(jsonPath("$.message").value("业务失败"))
                 .andExpect(jsonPath("$.traceId").value("trace-001"));
     }
@@ -47,7 +47,7 @@ class WebExceptionContractTest {
         mockMvc.perform(get("/validation").param("name", ""))
                 .andExpect(status().isBadRequest())
                 .andExpect(header().string("X-Trace-Id", not(blankOrNullString())))
-                .andExpect(jsonPath("$.code").value(ErrorCode.PARAM_ERROR.code()))
+                .andExpect(jsonPath("$.code").value(CommonErrorCode.PARAM_ERROR.code()))
                 .andExpect(jsonPath("$.message", not(blankOrNullString())))
                 .andExpect(jsonPath("$.traceId", not(blankOrNullString())));
     }
@@ -64,8 +64,8 @@ class WebExceptionContractTest {
     void unknownExceptionShouldHideInternalMessage() throws Exception {
         mockMvc.perform(get("/unknown"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.code").value(ErrorCode.INTERNAL_ERROR.code()))
-                .andExpect(jsonPath("$.message").value(ErrorCode.INTERNAL_ERROR.message()))
+                .andExpect(jsonPath("$.code").value(CommonErrorCode.INTERNAL_ERROR.code()))
+                .andExpect(jsonPath("$.message").value(CommonErrorCode.INTERNAL_ERROR.message()))
                 .andExpect(jsonPath("$.traceId", not(blankOrNullString())));
     }
 

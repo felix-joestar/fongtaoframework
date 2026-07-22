@@ -3,13 +3,13 @@ package com.fongtaoframework.starter.admin.modules.rights.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import com.fongtaoframework.starter.admin.modules.rights.domain.entity.SysRes;
 import com.fongtaoframework.starter.admin.modules.rights.domain.entity.SysRoleAuth;
-import com.fongtaoframework.starter.mybatis.mapper.CrudMapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 @Mapper
-public interface SysRoleAuthMapper extends CrudMapper<SysRoleAuth> {
+public interface SysRoleAuthMapper extends BaseMapper<SysRoleAuth> {
 
     @Select("""
             select distinct res.permission_code from sys_rights rights

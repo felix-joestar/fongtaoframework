@@ -12,6 +12,7 @@ public record SysConfigUpdateParam(
         @NotBlank @Size(max = 32) String valueType,
         @NotNull Integer editable,
         @NotNull Integer enabled,
-        @Size(max = 500) String remark
+        @Size(max = 500) String remark,
+        @NotNull Long version
 ) {
 }

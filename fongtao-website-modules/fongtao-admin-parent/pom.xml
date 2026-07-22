@@ -14,6 +14,16 @@
     <name>fongtao-admin-parent</name>
     <description>admin 聚合工程，仅包含 admin starter 和调试 website。</description>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.fongtaoframework</groupId>
+                <artifactId>fongtao-admin-starter</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <modules>
         <module>fongtao-admin-starter</module>
         <module>fongtao-admin-website</module>

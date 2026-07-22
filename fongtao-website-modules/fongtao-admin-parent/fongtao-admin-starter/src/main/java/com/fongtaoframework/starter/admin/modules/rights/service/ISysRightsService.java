@@ -1,7 +1,7 @@
 package com.fongtaoframework.starter.admin.modules.rights.service;
 
-import com.fongtaoframework.core.PageQuery;
-import com.fongtaoframework.core.PageResult;
+import com.fongtaoframework.starter.core.page.PageQuery;
+import com.fongtaoframework.starter.core.page.PageResult;
 import com.fongtaoframework.starter.admin.modules.rights.domain.entity.SysRights;
 import java.util.List;
 
@@ -9,17 +9,29 @@ public interface ISysRightsService {
 
     PageResult<SysRights> page(PageQuery pageQuery);
 
-    SysRights get(String sysRightsId);
+    SysRights findById(String sysRightsId);
 
     SysRights findDefaultByUserId(String sysUserId);
 
     List<String> listCustomOrgIds(String sysRightsId);
 
-    void create(SysRights entity, List<String> customSysOrgIds);
+    boolean existsBySysUserId(String sysUserId);
 
-    void updateById(SysRights entity, List<String> customSysOrgIds);
+    boolean existsBySysOrgId(String sysOrgId);
 
-    void updateEnabled(String sysRightsId, Integer enabled);
+    boolean existsExtraBySysOrgId(String sysOrgId);
 
-    void deleteById(String sysRightsId);
+    boolean existsBySysRoleId(String sysRoleId);
+
+    boolean existsByUserOrgRole(String sysUserId, String sysOrgId, String sysRoleId, String excludedSysRightsId);
+
+    void clearDefaulted(String sysUserId, String excludedSysRightsId);
+
+    boolean save(SysRights entity);
+
+    boolean updateById(SysRights entity);
+
+    boolean deleteById(String sysRightsId);
+
+    boolean replaceCustomSysOrgs(String sysRightsId, List<String> sysOrgIds);
 }

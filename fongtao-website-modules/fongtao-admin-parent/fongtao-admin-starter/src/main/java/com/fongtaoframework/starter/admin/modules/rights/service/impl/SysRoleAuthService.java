@@ -1,52 +1,56 @@
 package com.fongtaoframework.starter.admin.modules.rights.service.impl;
 
-import org.springframework.stereotype.Service;
-import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.fongtaoframework.core.BusinessException;
 import com.fongtaoframework.starter.admin.modules.rights.domain.entity.SysRes;
 import com.fongtaoframework.starter.admin.modules.rights.domain.entity.SysRoleAuth;
 import com.fongtaoframework.starter.admin.modules.rights.mapper.SysRoleAuthMapper;
-import com.fongtaoframework.starter.admin.modules.rights.service.ISysResService;
 import com.fongtaoframework.starter.admin.modules.rights.service.ISysRoleAuthService;
-import com.fongtaoframework.starter.admin.modules.rights.service.ISysRoleService;
-import java.util.LinkedHashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
 public class SysRoleAuthService implements ISysRoleAuthService {
 
     private final SysRoleAuthMapper sysRoleAuthMapper;
-    private final ISysRoleService sysRoleService;
-    private final ISysResService sysResService;
 
     @Override
-    public List<SysRes> listAuthResources(String sysRoleId) {
-        sysRoleService.get(sysRoleId);
-        return sysResService.listByRoleId(sysRoleId);
+    public List<String> listResourceIdsByRoleId(String sysRoleId) {
+        return sysRoleAuthMapper.selectList(new LambdaQueryWrapper<SysRoleAuth>()
+                .eq(SysRoleAuth::getSysRoleId, sysRoleId)).stream().map(SysRoleAuth::getSysResId).toList();
     }
 
     @Override
-    @Transactional
-    public void replaceAuthResources(String sysRoleId, List<SysRoleAuth> sysRoleAuths) {
-        sysRoleService.get(sysRoleId);
-        List<String> distinctIds = sysRoleAuths == null ? List.of() : new java.util.ArrayList<>(new LinkedHashSet<>(
-                sysRoleAuths.stream().map(SysRoleAuth::getSysResId).toList()));
-        for (String sysResId : distinctIds) {
-            if (sysResId == null || sysResId.isBlank()) throw new BusinessException("资源标识不能为空");
-            sysResService.get(sysResId);
-        }
+    public List<SysRes> listEffectiveResourcesByUserId(String sysUserId) {
+        return sysRoleAuthMapper.selectDefaultVisibleResourcesByUserId(sysUserId);
+    }
+
+    @Override
+    public List<String> listEffectivePermissionCodesByUserId(String sysUserId) {
+        return sysRoleAuthMapper.selectDefaultPermissionsByUserId(sysUserId);
+    }
+
+    @Override
+    public boolean existsByRoleId(String sysRoleId) {
+        return sysRoleAuthMapper.selectCount(new LambdaQueryWrapper<SysRoleAuth>()
+                .eq(SysRoleAuth::getSysRoleId, sysRoleId)) > 0;
+    }
+
+    @Override
+    public boolean existsByResId(String sysResId) {
+        return sysRoleAuthMapper.selectCount(new LambdaQueryWrapper<SysRoleAuth>()
+                .eq(SysRoleAuth::getSysResId, sysResId)) > 0;
+    }
+
+    @Override
+    public boolean replaceByRoleId(String sysRoleId, List<SysRoleAuth> sysRoleAuths) {
         sysRoleAuthMapper.delete(new LambdaQueryWrapper<SysRoleAuth>().eq(SysRoleAuth::getSysRoleId, sysRoleId));
-        for (String sysResId : distinctIds) {
-            SysRoleAuth entity = new SysRoleAuth();
-            entity.setSysRoleAuthId(IdUtil.simpleUUID());
-            entity.setSysRoleId(sysRoleId);
-            entity.setSysResId(sysResId);
-            if (sysRoleAuthMapper.insert(entity) != 1) throw new BusinessException("角色资源授权失败");
+        for (SysRoleAuth sysRoleAuth : sysRoleAuths) {
+            if (sysRoleAuthMapper.insert(sysRoleAuth) != 1) {
+                return false;
+            }
         }
+        return true;
     }
 }

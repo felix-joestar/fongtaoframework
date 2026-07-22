@@ -1,6 +1,5 @@
 package com.fongtaoframework.starter.admin.modules.rights.domain.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fongtaoframework.starter.mybatis.domain.entity.CrudEntity;
@@ -12,7 +11,7 @@ import lombok.Setter;
 @TableName("sys_user")
 public class SysUser extends CrudEntity {
 
-    @TableId(value = "sys_user_id", type = IdType.INPUT)
+    @TableId("sys_user_id")
     private String sysUserId;
     private String sysUserCode;
     private String sysUserPwd;

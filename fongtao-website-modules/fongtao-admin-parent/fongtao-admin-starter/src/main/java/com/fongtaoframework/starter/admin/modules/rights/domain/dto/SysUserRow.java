@@ -12,5 +12,7 @@ public record SysUserRow(
         String sysUserMobile,
         String sysUserEmail,
         String avatarFileId,
-        Integer sysUserStatus) {
+        Integer sysUserStatus,
+        Long version
+) {
 }

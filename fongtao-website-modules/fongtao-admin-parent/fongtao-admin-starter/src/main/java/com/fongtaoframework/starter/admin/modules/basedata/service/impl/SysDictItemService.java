@@ -1,34 +1,23 @@
 package com.fongtaoframework.starter.admin.modules.basedata.service.impl;
 
-import org.springframework.stereotype.Service;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.fongtaoframework.core.BusinessException;
-import com.fongtaoframework.core.PageQuery;
-import com.fongtaoframework.core.PageResult;
-import com.fongtaoframework.starter.admin.modules.basedata.domain.entity.SysDict;
+import com.fongtaoframework.starter.core.page.PageQuery;
+import com.fongtaoframework.starter.core.page.PageResult;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.entity.SysDictItem;
 import com.fongtaoframework.starter.admin.modules.basedata.mapper.SysDictItemMapper;
-import com.fongtaoframework.starter.admin.modules.basedata.mapper.SysDictMapper;
 import com.fongtaoframework.starter.admin.modules.basedata.service.ISysDictItemService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
 public class SysDictItemService implements ISysDictItemService {
 
-    private static final String ITEM_CACHE = "fongtao:admin:dictionary-items";
+    private static final int ENABLED = 1;
 
     private final SysDictItemMapper sysDictItemMapper;
-    private final SysDictMapper sysDictMapper;
-    private final CacheManager cacheManager;
 
     @Override
     public PageResult<SysDictItem> page(PageQuery pageQuery) {
@@ -39,75 +28,42 @@ public class SysDictItemService implements ISysDictItemService {
     }
 
     @Override
-    public SysDictItem get(String sysDictItemId) {
-        SysDictItem entity = sysDictItemMapper.selectById(sysDictItemId);
-        if (entity == null) {
-            throw new BusinessException("字典项不存在或已删除");
-        }
-        return entity;
+    public SysDictItem findById(String sysDictItemId) {
+        return sysDictItemMapper.selectById(sysDictItemId);
     }
 
     @Override
-    @Transactional
-    public void create(SysDictItem entity) {
-        assertDictionaryExists(entity.getSysDictId());
-        assertValueUnique(entity.getSysDictId(), entity.getDictItemValue(), null);
-        if (sysDictItemMapper.insert(entity) != 1) {
-            throw new BusinessException("字典项新增失败");
-        }
-        clearCacheAfterCommit();
+    public boolean existsByDictId(String sysDictId) {
+        return sysDictItemMapper.selectCount(new LambdaQueryWrapper<SysDictItem>()
+                .eq(SysDictItem::getSysDictId, sysDictId)) > 0;
     }
 
     @Override
-    @Transactional
-    public void updateById(SysDictItem entity) {
-        get(entity.getSysDictItemId());
-        assertDictionaryExists(entity.getSysDictId());
-        assertValueUnique(entity.getSysDictId(), entity.getDictItemValue(), entity.getSysDictItemId());
-        if (sysDictItemMapper.updateById(entity) != 1) {
-            throw new BusinessException("字典项更新失败");
-        }
-        clearCacheAfterCommit();
+    public boolean existsByDictIdAndValue(String sysDictId, String dictItemValue, String excludedSysDictItemId) {
+        return sysDictItemMapper.selectCount(new LambdaQueryWrapper<SysDictItem>()
+                .eq(SysDictItem::getSysDictId, sysDictId).eq(SysDictItem::getDictItemValue, dictItemValue)
+                .ne(excludedSysDictItemId != null, SysDictItem::getSysDictItemId, excludedSysDictItemId)) > 0;
     }
 
     @Override
-    @Transactional
-    public void deleteById(String sysDictItemId) {
-        get(sysDictItemId);
-        if (sysDictItemMapper.deleteById(sysDictItemId) != 1) {
-            throw new BusinessException("字典项删除失败");
-        }
-        clearCacheAfterCommit();
+    public List<SysDictItem> listEnabledByDictId(String sysDictId) {
+        return sysDictItemMapper.selectList(new LambdaQueryWrapper<SysDictItem>()
+                .eq(SysDictItem::getSysDictId, sysDictId).eq(SysDictItem::getEnabled, ENABLED)
+                .orderByAsc(SysDictItem::getSortNo).orderByAsc(SysDictItem::getDictItemValue));
     }
 
-    private void assertDictionaryExists(String sysDictId) {
-        if (sysDictMapper.selectById(sysDictId) == null) {
-            throw new BusinessException("所属字典不存在或已删除");
-        }
+    @Override
+    public boolean save(SysDictItem entity) {
+        return sysDictItemMapper.insert(entity) == 1;
     }
 
-    private void assertValueUnique(String sysDictId, String value, String currentId) {
-        if (sysDictItemMapper.selectCount(new LambdaQueryWrapper<SysDictItem>()
-                .eq(SysDictItem::getSysDictId, sysDictId).eq(SysDictItem::getDictItemValue, value)
-                .ne(StrUtil.isNotBlank(currentId), SysDictItem::getSysDictItemId, currentId)) > 0) {
-            throw new BusinessException("字典项值已存在");
-        }
+    @Override
+    public boolean updateById(SysDictItem entity) {
+        return sysDictItemMapper.updateById(entity) == 1;
     }
 
-    private void clearCacheAfterCommit() {
-        Cache cache = cacheManager.getCache(ITEM_CACHE);
-        if (cache == null) {
-            return;
-        }
-        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-            cache.clear();
-            return;
-        }
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
-            @Override
-            public void afterCommit() {
-                cache.clear();
-            }
-        });
+    @Override
+    public boolean deleteById(String sysDictItemId) {
+        return sysDictItemMapper.deleteById(sysDictItemId) == 1;
     }
 }

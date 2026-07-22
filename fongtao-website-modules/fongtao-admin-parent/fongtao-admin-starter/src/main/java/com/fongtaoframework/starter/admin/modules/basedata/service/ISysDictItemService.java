@@ -1,18 +1,25 @@
 package com.fongtaoframework.starter.admin.modules.basedata.service;
 
-import com.fongtaoframework.core.PageQuery;
-import com.fongtaoframework.core.PageResult;
+import com.fongtaoframework.starter.core.page.PageQuery;
+import com.fongtaoframework.starter.core.page.PageResult;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.entity.SysDictItem;
+import java.util.List;
 
 public interface ISysDictItemService {
 
     PageResult<SysDictItem> page(PageQuery pageQuery);
 
-    SysDictItem get(String sysDictItemId);
+    SysDictItem findById(String sysDictItemId);
 
-    void create(SysDictItem entity);
+    boolean existsByDictId(String sysDictId);
 
-    void updateById(SysDictItem entity);
+    boolean existsByDictIdAndValue(String sysDictId, String dictItemValue, String excludedSysDictItemId);
 
-    void deleteById(String sysDictItemId);
+    List<SysDictItem> listEnabledByDictId(String sysDictId);
+
+    boolean save(SysDictItem entity);
+
+    boolean updateById(SysDictItem entity);
+
+    boolean deleteById(String sysDictItemId);
 }

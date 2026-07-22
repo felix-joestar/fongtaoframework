@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.Version;
-import com.fongtaoframework.core.TraceIdContext;
+import com.fongtaoframework.starter.core.trace.TraceIdContext;
 import com.fongtaoframework.starter.mybatis.domain.entity.AuditEntity;
 import com.fongtaoframework.starter.mybatis.domain.entity.CrudEntity;
 import com.fongtaoframework.starter.mybatis.logging.P6spySqlFormat;

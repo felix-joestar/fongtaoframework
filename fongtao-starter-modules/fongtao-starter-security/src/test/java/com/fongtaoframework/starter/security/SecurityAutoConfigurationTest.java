@@ -1,6 +1,6 @@
 package com.fongtaoframework.starter.security;
 
-import com.fongtaoframework.core.R;
+import com.fongtaoframework.starter.core.result.R;
 import com.fongtaoframework.starter.security.jwt.JwtTokenService;
 import com.fongtaoframework.starter.security.jwt.TokenValue;
 import com.fongtaoframework.starter.security.userdetails.LoginUserDetails;

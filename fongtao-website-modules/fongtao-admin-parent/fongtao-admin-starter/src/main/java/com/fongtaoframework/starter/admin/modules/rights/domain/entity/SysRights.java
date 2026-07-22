@@ -1,6 +1,5 @@
 package com.fongtaoframework.starter.admin.modules.rights.domain.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fongtaoframework.starter.mybatis.domain.entity.CrudEntity;
@@ -12,7 +11,7 @@ import lombok.Setter;
 @TableName("sys_rights")
 public class SysRights extends CrudEntity {
 
-    @TableId(value = "sys_rights_id", type = IdType.INPUT)
+    @TableId("sys_rights_id")
     private String sysRightsId;
     private String sysUserId;
     private String sysOrgId;

@@ -1,7 +1,6 @@
 package com.fongtaoframework.starter.logging.autoconfigure;
 
 import com.fongtaoframework.starter.logging.properties.LoggingStarterProperties;
-import com.fongtaoframework.starter.logging.support.RequestIdResolver;
 import com.fongtaoframework.starter.logging.web.RequestLoggingFilter;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -16,18 +15,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class LoggingStarterAutoConfiguration {
 
     @Bean
-    @ConditionalOnMissingBean
-    public RequestIdResolver requestIdResolver() {
-        return new RequestIdResolver();
-    }
-
-    @Bean
     @ConditionalOnClass(OncePerRequestFilter.class)
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "fongtao.logging.request", name = "enabled", havingValue = "true")
-    public RequestLoggingFilter requestLoggingFilter(
-            LoggingStarterProperties properties,
-            RequestIdResolver requestIdResolver) {
-        return new RequestLoggingFilter(properties.getRequest(), requestIdResolver);
+    public RequestLoggingFilter requestLoggingFilter(LoggingStarterProperties properties) {
+        return new RequestLoggingFilter(properties.getRequest());
     }
 }

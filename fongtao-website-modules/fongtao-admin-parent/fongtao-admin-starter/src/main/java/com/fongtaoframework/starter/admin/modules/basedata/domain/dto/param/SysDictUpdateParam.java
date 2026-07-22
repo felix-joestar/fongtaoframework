@@ -9,6 +9,7 @@ public record SysDictUpdateParam(
         @NotBlank @Size(max = 64) String sysDictCode,
         @NotBlank @Size(max = 128) String sysDictName,
         @NotNull Integer enabled,
-        @Size(max = 500) String remark
+        @Size(max = 500) String remark,
+        @NotNull Long version
 ) {
 }

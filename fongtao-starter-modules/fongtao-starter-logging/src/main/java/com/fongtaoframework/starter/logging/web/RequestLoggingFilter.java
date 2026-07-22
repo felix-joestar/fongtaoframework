@@ -1,7 +1,7 @@
 package com.fongtaoframework.starter.logging.web;
 
 import com.fongtaoframework.starter.logging.properties.LoggingStarterProperties;
-import com.fongtaoframework.starter.logging.support.RequestIdResolver;
+import com.fongtaoframework.starter.core.trace.TraceIdGenerator;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,7 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class RequestLoggingFilter extends OncePerRequestFilter {
 
     private final LoggingStarterProperties.Request properties;
-    private final RequestIdResolver requestIdResolver;
 
     @Override
     protected void doFilterInternal(
@@ -24,13 +23,13 @@ public class RequestLoggingFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
         long start = System.currentTimeMillis();
-        String traceId = requestIdResolver.resolve(request.getHeader(properties.getTraceHeaderName()));
+        String traceId = TraceIdGenerator.resolve(request.getHeader(properties.getTraceHeaderName()));
         try {
             filterChain.doFilter(request, response);
         } finally {
             String responseTraceId = response.getHeader(properties.getTraceHeaderName());
             if (responseTraceId != null) {
-                traceId = requestIdResolver.resolve(responseTraceId);
+                traceId = TraceIdGenerator.resolve(responseTraceId);
             }
             log.info(
                     "http_request method={} uri={} status={} durationMs={} traceId={} clientIp={}",

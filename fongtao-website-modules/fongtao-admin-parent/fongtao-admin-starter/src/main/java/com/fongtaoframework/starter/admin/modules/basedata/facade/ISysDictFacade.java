@@ -1,6 +1,6 @@
 package com.fongtaoframework.starter.admin.modules.basedata.facade;
 
-import com.fongtaoframework.core.PageResult;
+import com.fongtaoframework.starter.core.page.PageResult;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.dto.SysDictItemRow;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.dto.SysDictRow;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.dto.param.SysDictCreateParam;

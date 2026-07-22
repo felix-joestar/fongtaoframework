@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mock;
 @SpringBootTest(properties = {
         "fongtao.admin.enabled=false",
         "fongtao.security.jwt.secret=0123456789abcdef0123456789abcdef",
+        "spring.data.redis.password=test",
         "spring.cache.type=none",
         "spring.autoconfigure.exclude=com.alibaba.druid.spring.boot3.autoconfigure.DruidDataSourceAutoConfigure,org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration"
 })

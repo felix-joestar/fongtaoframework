@@ -2,8 +2,8 @@ package com.fongtaoframework.starter.admin.modules.basedata.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import com.fongtaoframework.starter.admin.modules.basedata.domain.entity.SysDict;
-import com.fongtaoframework.starter.mybatis.mapper.CrudMapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 @Mapper
-public interface SysDictMapper extends CrudMapper<SysDict> {
+public interface SysDictMapper extends BaseMapper<SysDict> {
 }

@@ -6,7 +6,7 @@ import com.fongtaoframework.starter.admin.modules.auth.domain.dto.LoginUserRespo
 import com.fongtaoframework.starter.admin.modules.auth.domain.dto.RefreshTokenRequest;
 import com.fongtaoframework.starter.admin.modules.auth.facade.IAdminAuthFacade;
 import com.fongtaoframework.starter.admin.modules.rights.domain.dto.SysResRow;
-import com.fongtaoframework.core.R;
+import com.fongtaoframework.starter.core.result.R;
 import java.util.List;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

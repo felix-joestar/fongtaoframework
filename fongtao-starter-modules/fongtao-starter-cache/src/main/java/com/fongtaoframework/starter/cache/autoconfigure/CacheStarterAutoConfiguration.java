@@ -32,10 +32,10 @@ import org.springframework.util.StringUtils;
 public class CacheStarterAutoConfiguration {
 
     @Bean
-    @ConditionalOnClass(Caffeine.class)
-    @ConditionalOnProperty(prefix = "fongtao.cache.caffeine", name = "enabled", havingValue = "true", matchIfMissing = true)
-    @ConditionalOnMissingBean
-    public Caffeine<Object, Object> caffeine(CacheStarterProperties properties) {
+    @ConditionalOnClass(CaffeineCacheManager.class)
+    @ConditionalOnExpression("${fongtao.cache.caffeine.enabled:true} && ('${spring.cache.type:}' == '' || '${spring.cache.type:}' == 'caffeine')")
+    @ConditionalOnMissingBean(CacheManager.class)
+    public CaffeineCacheManager caffeineCacheManager(CacheStarterProperties properties) {
         CacheStarterProperties.Caffeine caffeine = properties.getCaffeine();
         Caffeine<Object, Object> builder = Caffeine.newBuilder()
                 .maximumSize(caffeine.getMaximumSize())
@@ -43,21 +43,11 @@ public class CacheStarterAutoConfiguration {
         if (caffeine.isRecordStats()) {
             builder.recordStats();
         }
-        return builder;
-    }
-
-    @Bean
-    @ConditionalOnClass(CaffeineCacheManager.class)
-    @ConditionalOnExpression("${fongtao.cache.caffeine.enabled:true} && ('${spring.cache.type:}' == '' || '${spring.cache.type:}' == 'caffeine')")
-    @ConditionalOnMissingBean(CacheManager.class)
-    public CaffeineCacheManager caffeineCacheManager(
-            Caffeine<Object, Object> caffeine,
-            CacheStarterProperties properties) {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
-        cacheManager.setCaffeine(caffeine);
-        cacheManager.setAllowNullValues(properties.getCaffeine().isAllowNullValues());
-        if (!properties.getCaffeine().getCacheNames().isEmpty()) {
-            cacheManager.setCacheNames(properties.getCaffeine().getCacheNames());
+        cacheManager.setCaffeine(builder);
+        cacheManager.setAllowNullValues(caffeine.isAllowNullValues());
+        if (!caffeine.getCacheNames().isEmpty()) {
+            cacheManager.setCacheNames(caffeine.getCacheNames());
         }
         return cacheManager;
     }

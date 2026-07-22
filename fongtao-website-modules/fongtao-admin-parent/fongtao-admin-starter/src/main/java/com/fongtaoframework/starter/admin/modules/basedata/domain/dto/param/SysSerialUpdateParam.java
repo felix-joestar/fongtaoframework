@@ -15,6 +15,7 @@ public record SysSerialUpdateParam(
         @NotNull Integer stepValue,
         @NotBlank @Size(max = 32) String cycleType,
         @NotNull Integer enabled,
-        @Size(max = 500) String remark
+        @Size(max = 500) String remark,
+        @NotNull Long version
 ) {
 }

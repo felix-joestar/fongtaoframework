@@ -1,8 +1,8 @@
 package com.fongtaoframework.starter.security.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fongtaoframework.core.ErrorCode;
-import com.fongtaoframework.core.R;
+import com.fongtaoframework.starter.core.result.CommonErrorCode;
+import com.fongtaoframework.starter.core.result.R;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,6 +19,6 @@ public class JsonAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
             throws IOException {
-        JsonResponseWriter.write(response, objectMapper, HttpStatus.FORBIDDEN, R.failed(ErrorCode.FORBIDDEN));
+        JsonResponseWriter.write(response, objectMapper, HttpStatus.FORBIDDEN, R.failed(CommonErrorCode.FORBIDDEN));
     }
 }

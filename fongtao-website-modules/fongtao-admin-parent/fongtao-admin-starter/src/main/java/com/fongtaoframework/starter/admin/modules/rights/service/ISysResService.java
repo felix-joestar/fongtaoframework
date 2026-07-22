@@ -1,7 +1,7 @@
 package com.fongtaoframework.starter.admin.modules.rights.service;
 
-import com.fongtaoframework.core.PageQuery;
-import com.fongtaoframework.core.PageResult;
+import com.fongtaoframework.starter.core.page.PageQuery;
+import com.fongtaoframework.starter.core.page.PageResult;
 import com.fongtaoframework.starter.admin.modules.rights.domain.entity.SysRes;
 import java.util.List;
 
@@ -11,17 +11,17 @@ public interface ISysResService {
 
     List<SysRes> list();
 
-    List<SysRes> listByRoleId(String sysRoleId);
+    List<SysRes> listByIds(List<String> sysResIds);
 
-    List<String> listEnabledPermissionCodesByUserId(String sysUserId);
+    SysRes findById(String sysResId);
 
-    List<SysRes> listVisibleByUserId(String sysUserId);
+    boolean existsByCode(String sysResCode, String excludedSysResId);
 
-    SysRes get(String sysResId);
+    boolean existsByParentId(String parentId);
 
-    void create(SysRes entity);
+    boolean save(SysRes entity);
 
-    void updateById(SysRes entity);
+    boolean updateById(SysRes entity);
 
-    void deleteById(String sysResId);
+    boolean deleteById(String sysResId);
 }

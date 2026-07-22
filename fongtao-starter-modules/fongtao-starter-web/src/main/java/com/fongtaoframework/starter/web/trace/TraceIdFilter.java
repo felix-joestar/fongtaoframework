@@ -1,8 +1,8 @@
 package com.fongtaoframework.starter.web.trace;
 
 import cn.hutool.core.util.StrUtil;
-import com.fongtaoframework.core.TraceIdContext;
-import com.fongtaoframework.starter.logging.support.RequestIdResolver;
+import com.fongtaoframework.starter.core.trace.TraceIdContext;
+import com.fongtaoframework.starter.core.trace.TraceIdGenerator;
 import com.fongtaoframework.starter.web.properties.WebStarterProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,7 +17,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class TraceIdFilter extends OncePerRequestFilter {
 
     private final WebStarterProperties.Trace properties;
-    private final RequestIdResolver requestIdResolver;
 
     @Override
     protected void doFilterInternal(
@@ -28,7 +27,7 @@ public class TraceIdFilter extends OncePerRequestFilter {
         if (StrUtil.isBlank(traceId)) {
             traceId = TraceIdContext.currentOrCreate();
         }
-        traceId = requestIdResolver.resolve(traceId);
+        traceId = TraceIdGenerator.resolve(traceId);
         TraceIdContext.set(traceId);
         MDC.put(properties.getMdcName(), traceId);
         response.setHeader(properties.getHeaderName(), traceId);

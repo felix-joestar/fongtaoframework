@@ -2,17 +2,50 @@ spring:
   application:
     name: fongtao-admin-website
   datasource:
-    url: jdbc:h2:mem:fongtao_admin_website;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:p6spy:mysql://127.0.0.1:3306/fongtao_admin?characterEncoding=utf8&connectTimeout=5000&socketTimeout=30000&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true
+    username: root
+    password: ENC(CmjSPUdslxuTyqm5a3ikaErVXPet+6MxVPi57mP6XULGQJ7g7o5PJwrx2FoLdJ/P)
+    driver-class-name: com.p6spy.engine.spy.P6SpyDriver
+    type: com.alibaba.druid.pool.DruidDataSource
     druid:
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 5000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      max-evictable-idle-time-millis: 600000
       validation-query: select 1
+      validation-query-timeout: 3
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      keep-alive: true
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 0
+      password: ENC(B9zDyG8hPp+wcAqEsc83WGkx/T7C0P5b9grjUeBcUsqeAFQXZIDe5tRz/o2GX3Ux)
+      timeout: 30s
+      connect-timeout: 30s
+      lettuce:
+        pool:
+          min-idle: 10
+          max-idle: 50
+          max-active: 500
+          max-wait: 60000
+        shutdown-timeout: 30s
+  cache:
+    type: redis
+    redis:
+      cache-null-values: false
+      time-to-live: 1h
+      key-prefix: "fongtao:"
   sql:
     init:
-      mode: always
-      schema-locations: classpath:META-INF/fongtao-admin/schema-h2.sql
-      data-locations: classpath:META-INF/fongtao-admin/data-h2.sql
+      # 启动前手工执行 fongtao-admin-parent/_database_schema/admin-mysql-schema.sql。
+      mode: never
 
 server:
   port: 8080
@@ -21,7 +54,27 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
 
+logging:
+  file:
+    path: ../logs
+  level:
+    root: INFO
+    com.fongtaoframework: DEBUG
+    p6spy: INFO
+
+jasypt:
+  encryptor:
+    algorithm: PBEWITHHMACSHA512ANDAES_256
+    key-obtention-iterations: 100000
+    pool-size: 1
+    provider-name: SunJCE
+    salt-generator-classname: org.jasypt.salt.RandomSaltGenerator
+    iv-generator-classname: org.jasypt.iv.RandomIvGenerator
+    string-output-type: base64
 fongtao:
+  logging:
+    request:
+      enabled: false
   security:
     jwt:
-      secret: 0123456789abcdef0123456789abcdef
+      secret: ENC(dxihRAb6zmlGvV3pzsvXN7dD7xsUGcpQRgDI84dacT7oEvOBogEA0dFxZigH673FdLxKT67f8ulSPe+VerTm+ZVok+dft4Nd9ocdtaEEUqg=)

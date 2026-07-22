@@ -1,8 +1,8 @@
 package com.fongtaoframework.starter.security.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fongtaoframework.core.ErrorCode;
-import com.fongtaoframework.core.R;
+import com.fongtaoframework.starter.core.result.CommonErrorCode;
+import com.fongtaoframework.starter.core.result.R;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -19,6 +19,6 @@ public class JsonAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException {
-        JsonResponseWriter.write(response, objectMapper, HttpStatus.UNAUTHORIZED, R.failed(ErrorCode.UNAUTHORIZED));
+        JsonResponseWriter.write(response, objectMapper, HttpStatus.UNAUTHORIZED, R.failed(CommonErrorCode.UNAUTHORIZED));
     }
 }

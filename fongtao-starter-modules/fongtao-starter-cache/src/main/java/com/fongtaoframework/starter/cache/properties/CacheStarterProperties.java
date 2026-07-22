@@ -14,8 +14,6 @@ public class CacheStarterProperties {
 
     private final Caffeine caffeine = new Caffeine();
 
-    private final Redis redis = new Redis();
-
     @Getter
     @Setter
     public static class Caffeine {
@@ -33,16 +31,4 @@ public class CacheStarterProperties {
         private boolean recordStats;
     }
 
-    @Getter
-    @Setter
-    public static class Redis {
-
-        private boolean enabled = true;
-
-        private String keyPrefix = "fongtao:";
-
-        private Duration defaultTtl = Duration.ofHours(1);
-
-        private boolean cacheNullValues;
-    }
 }

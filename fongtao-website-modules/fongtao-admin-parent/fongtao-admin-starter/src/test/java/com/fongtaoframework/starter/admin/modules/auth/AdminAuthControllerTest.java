@@ -1,5 +1,7 @@
 package com.fongtaoframework.starter.admin.modules.auth;
 
+
+import com.fongtaoframework.starter.admin.support.AdminMySqlIntegrationTest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -11,7 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.blankOrNullString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -21,21 +23,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(
         classes = AdminAuthControllerTest.TestApplication.class,
-        webEnvironment = SpringBootTest.WebEnvironment.MOCK,
-        properties = {
-                "spring.datasource.url=jdbc:h2:mem:fongtao_admin;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1",
-                "spring.datasource.driver-class-name=org.h2.Driver",
-                "spring.datasource.username=sa",
-                "spring.datasource.password=",
-                "spring.datasource.druid.validation-query=select 1",
-                "spring.sql.init.mode=always",
-                "spring.sql.init.schema-locations=classpath:META-INF/fongtao-admin/schema-h2.sql",
-                "spring.sql.init.data-locations=classpath:META-INF/fongtao-admin/data-h2.sql",
-                "mybatis-plus.configuration.map-underscore-to-camel-case=true",
-                "fongtao.security.jwt.secret=0123456789abcdef0123456789abcdef"
-        })
+        webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-class AdminAuthControllerTest {
+class AdminAuthControllerTest extends AdminMySqlIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -57,7 +47,8 @@ class AdminAuthControllerTest {
                 .andExpect(jsonPath("$.data.refreshToken", not(blankOrNullString())))
                 .andExpect(jsonPath("$.data.refreshTokenExpiresIn").value(604800))
                 .andExpect(jsonPath("$.data.user.username").value("admin"))
-                .andExpect(jsonPath("$.data.user.permissions", empty()));
+                .andExpect(jsonPath("$.data.user.permissions", hasItem("admin:sys-user:page")))
+                .andExpect(jsonPath("$.data.user.defaultIdentity.dataScope").value("all"));
     }
 
     @Test
@@ -91,7 +82,8 @@ class AdminAuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.userId").value("00000000000000000000000000000001"))
                 .andExpect(jsonPath("$.data.username").value("admin"))
-                .andExpect(jsonPath("$.data.permissions", empty()));
+                .andExpect(jsonPath("$.data.permissions", hasItem("admin:sys-user:page")))
+                .andExpect(jsonPath("$.data.defaultIdentity.dataScope").value("all"));
     }
 
     @Test

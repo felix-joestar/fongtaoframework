@@ -2,7 +2,6 @@ package com.fongtaoframework.starter.logging;
 
 import com.fongtaoframework.starter.logging.autoconfigure.LoggingStarterAutoConfiguration;
 import com.fongtaoframework.starter.logging.properties.LoggingStarterProperties;
-import com.fongtaoframework.starter.logging.support.RequestIdResolver;
 import com.fongtaoframework.starter.logging.support.SensitiveDataSanitizer;
 import com.fongtaoframework.starter.logging.web.RequestLoggingFilter;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,6 @@ class LoggingStarterAutoConfigurationTest {
     void requestLoggingFilterShouldBeOptIn() {
         contextRunner.run(context -> {
             assertThat(context).hasSingleBean(LoggingStarterProperties.class);
-            assertThat(context).hasSingleBean(RequestIdResolver.class);
             assertThat(context).doesNotHaveBean(RequestLoggingFilter.class);
         });
     }

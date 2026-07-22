@@ -5,7 +5,9 @@ import com.fongtaoframework.starter.admin.modules.auth.domain.dto.LoginResponse;
 import com.fongtaoframework.starter.admin.modules.auth.domain.dto.LoginUserResponse;
 import com.fongtaoframework.starter.admin.modules.auth.domain.dto.RefreshTokenRequest;
 import com.fongtaoframework.starter.admin.modules.auth.facade.IAdminAuthFacade;
-import com.fongtaoframework.core.R;
+import com.fongtaoframework.starter.admin.modules.rights.domain.dto.SysResRow;
+import com.fongtaoframework.starter.core.result.R;
+import java.util.List;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -54,6 +56,15 @@ public class AdminAuthController {
     public ResponseEntity<R<LoginUserResponse>> loginUser() {
         try {
             return ResponseEntity.ok(R.success(adminAuthFacade.loginUser()));
+        } catch (AuthenticationCredentialsNotFoundException ex) {
+            return failed(HttpStatus.UNAUTHORIZED, 401, ex.getMessage());
+        }
+    }
+
+    @GetMapping("/login-user/resources")
+    public ResponseEntity<R<List<SysResRow>>> loginUserResources() {
+        try {
+            return ResponseEntity.ok(R.success(adminAuthFacade.loginUserResources()));
         } catch (AuthenticationCredentialsNotFoundException ex) {
             return failed(HttpStatus.UNAUTHORIZED, 401, ex.getMessage());
         }

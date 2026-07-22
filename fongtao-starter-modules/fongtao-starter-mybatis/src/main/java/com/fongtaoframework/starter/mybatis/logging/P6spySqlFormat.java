@@ -1,7 +1,7 @@
 package com.fongtaoframework.starter.mybatis.logging;
 
 import cn.hutool.core.util.StrUtil;
-import com.fongtaoframework.core.TraceIdContext;
+import com.fongtaoframework.starter.core.trace.TraceIdContext;
 import com.p6spy.engine.common.P6Util;
 import com.p6spy.engine.spy.appender.MessageFormattingStrategy;
 

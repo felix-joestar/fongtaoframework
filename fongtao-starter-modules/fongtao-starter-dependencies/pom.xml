@@ -4,14 +4,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.fongtaoframework</groupId>
-        <artifactId>fongtao-starter-modules</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-
+    <groupId>com.fongtaoframework</groupId>
     <artifactId>fongtao-starter-dependencies</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>fongtao-starter-dependencies</name>
@@ -32,6 +27,7 @@
         <x-file-storage.version>2.3.0</x-file-storage.version>
         <forest.version>1.5.32</forest.version>
         <arthas.version>4.0.4</arthas.version>
+        <jasypt-spring-boot.version>4.0.4</jasypt-spring-boot.version>
     </properties>
 
     <dependencyManagement>
@@ -102,12 +98,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.fongtaoframework</groupId>
-                <artifactId>fongtao-admin-starter</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
                 <version>${mybatis-plus.version}</version>
@@ -154,6 +144,11 @@
             </dependency>
             <dependency>
                 <groupId>org.redisson</groupId>
+                <artifactId>redisson</artifactId>
+                <version>${redisson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.redisson</groupId>
                 <artifactId>redisson-spring-boot-starter</artifactId>
                 <version>${redisson.version}</version>
             </dependency>
@@ -176,6 +171,11 @@
                 <groupId>com.taobao.arthas</groupId>
                 <artifactId>arthas-spring-boot-starter</artifactId>
                 <version>${arthas.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.ulisesbocchio</groupId>
+                <artifactId>jasypt-spring-boot-starter</artifactId>
+                <version>${jasypt-spring-boot.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -3,7 +3,6 @@ package com.fongtaoframework.starter.web.autoconfigure;
 import com.fongtaoframework.starter.web.exception.GlobalExceptionHandler;
 import com.fongtaoframework.starter.web.properties.WebStarterProperties;
 import com.fongtaoframework.starter.web.trace.TraceIdFilter;
-import com.fongtaoframework.starter.logging.support.RequestIdResolver;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -22,7 +21,7 @@ public class WebStarterAutoConfiguration {
     @Bean
     @ConditionalOnMissingBean
     @ConditionalOnProperty(prefix = "fongtao.web.trace", name = "enabled", havingValue = "true", matchIfMissing = true)
-    public TraceIdFilter traceIdFilter(WebStarterProperties properties, RequestIdResolver requestIdResolver) {
-        return new TraceIdFilter(properties.getTrace(), requestIdResolver);
+    public TraceIdFilter traceIdFilter(WebStarterProperties properties) {
+        return new TraceIdFilter(properties.getTrace());
     }
 }

@@ -5,44 +5,26 @@ import com.fongtaoframework.starter.security.properties.SecurityStarterPropertie
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.env.MockEnvironment;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SecurityProductionSafetyTest {
 
     @Test
-    void prodShouldRejectDefaultJwtSecret() {
+    void shouldRejectMissingJwtSecret() {
         SecurityStarterProperties properties = new SecurityStarterProperties();
-        properties.getCors().setAllowedOriginPatterns(List.of("https://admin.example.com"));
-        MockEnvironment environment = new MockEnvironment().withProperty("spring.profiles.active", "prod");
-        environment.setActiveProfiles("prod");
 
-        assertThatThrownBy(() -> SecurityStarterPropertiesValidator.validate(properties, environment))
+        assertThatThrownBy(() -> SecurityStarterPropertiesValidator.validate(properties, new MockEnvironment()))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("fongtao.security.jwt.secret");
     }
 
     @Test
-    void prodShouldRejectWildcardCors() {
+    void shouldAllowExplicitJwtSecret() {
         SecurityStarterProperties properties = new SecurityStarterProperties();
         properties.getJwt().setSecret("0123456789abcdef0123456789abcdef");
-        MockEnvironment environment = new MockEnvironment();
-        environment.setActiveProfiles("production");
 
-        assertThatThrownBy(() -> SecurityStarterPropertiesValidator.validate(properties, environment))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("fongtao.security.cors.allowed-origin-patterns");
-    }
-
-    @Test
-    void devShouldAllowLocalDefaults() {
-        SecurityStarterProperties properties = new SecurityStarterProperties();
-        MockEnvironment environment = new MockEnvironment();
-        environment.setActiveProfiles("dev");
-
-        assertThatCode(() -> SecurityStarterPropertiesValidator.validate(properties, environment))
+        assertThatCode(() -> SecurityStarterPropertiesValidator.validate(properties, new MockEnvironment()))
                 .doesNotThrowAnyException();
     }
 }

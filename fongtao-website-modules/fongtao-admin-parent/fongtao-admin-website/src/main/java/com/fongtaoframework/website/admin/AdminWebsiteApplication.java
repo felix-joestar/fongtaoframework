@@ -1,4 +1,4 @@
-package com.fongtaoframework.boot.website.admin;
+package com.fongtaoframework.website.admin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

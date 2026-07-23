@@ -1,4 +1,4 @@
-package com.fongtaoframework.boot.website.admin;
+package com.fongtaoframework.website.admin;
 
 import org.redisson.api.RedissonClient;
 import org.junit.jupiter.api.Test;

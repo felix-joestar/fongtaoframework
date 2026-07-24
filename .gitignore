@@ -5,3 +5,4 @@ logs/
 .setting.*/
 *.log
 *.iml
+.codegraph/
